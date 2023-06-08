@@ -1,0 +1,68 @@
+{
+  "notes": [
+    {
+      "title": "Buy groceries",
+      "details": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed auctor feugiat elit, vitae luctus est placerat vitae. Mauris eu eros ut ligula posuere lobortis. Ut commodo, nunc a sollicitudin tincidunt, erat neque fringilla purus, eu cursus ligula sapien eu erat. Pellentesque feugiat tellus mi, in scelerisque orci sollicitudin eu. Morbi aliquet lobortis nunc, nec gravida mi tincidunt nec.",
+      "pinned": true,
+      "labels": [
+        2
+      ],
+      "id": 1
+    },
+    {
+      "title": "Finish homework",
+      "details": "Complete the math assignment and submit it online.",
+      "pinned": false,
+      "labels": [
+        1,
+        3
+      ],
+      "id": 2
+    },
+    {
+      "title": "Go for a run",
+      "details": "Take a jog in the park for 30 minutes.",
+      "pinned": false,
+      "labels": [
+        3
+      ],
+      "id": 3
+    },
+    {
+      "title": "Read a book",
+      "details": "Start reading 'The Great Gatsby' by F. Scott Fitzgerald.",
+      "pinned": false,
+      "labels": [
+        4
+      ],
+      "id": 4
+    },
+    {
+      "title": "Prepare presentation",
+      "details": "Gather information and create slides for the upcoming presentation.",
+      "pinned": true,
+      "labels": [
+        1
+      ],
+      "id": 5
+    }
+  ],
+  "labels": [
+    {
+      "name": "Work",
+      "id": 1
+    },
+    {
+      "name": "Family",
+      "id": 2
+    },
+    {
+      "name": "Personal",
+      "id": 3
+    },
+    {
+      "name": "Health",
+      "id": 4
+    }
+  ]
+}
