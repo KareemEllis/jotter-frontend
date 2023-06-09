@@ -1,3 +1,5 @@
+import labelService from '../services/labels'
+
 import React, { useState, useEffect } from 'react'
 import Typography from '@mui/material/Typography'
 import Container from '@mui/material/Container'
@@ -56,61 +58,32 @@ export default function EditLabels({ allLabels, setAllLabels }) {
     }
 
     if (newLabel != '' && !labelAlreadyExists) {
-      fetch('http://localhost:8000/labels', {
-        method: 'POST',
-        headers: {"Content-type": "application/json"},
-        body: JSON.stringify({ "name": newLabel })
-      })
-      .then(() => {
-        //ADD CODE TO UPDATE STATE WITH RETURNED JSON
-        setNewLabel('')
-      })
+      const newLabelObj = { "name": newLabel }
+
+      labelService
+        .create(newLabelObj)
+        .then((data) => {
+          //GET RETURNED LABEL OBJ AND ADD TO STATE USING THE ID
+          setNewLabel('')
+        })
+        .catch(error => {
+          console.log(error)
+        })
     } 
   }
 
   //Delete label
   const handleDelete = (e, label) => {
-    console.log(`Deleting label ${label.name}`)
-
-    fetch('http://localhost:8000/notes')
-      .then(res => res.json())
-      .then(async data => {
-        const notesToEdit = data.filter(note =>
-          note.labels.some(noteLabel => noteLabel === label.id)
-        )
-
-        const editedNotes = notesToEdit.map(note => {
-          return {
-            ...note,
-            labels: note.labels.filter(l => l != label.id)
-          }
-        })
-
-        fetch('http://localhost:8000/notes', {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(editedNotes)
-        })
-          .then(response => {
-            if (!response.ok) {
-              throw new Error('Failed to Remove Label from notes');
-            }
-            // Handle success
-            console.log('Removed Label from notes Sucessfully');
-          })
-          .catch(error => {
-            // Handle error
-            console.error(error);
-          });
-
-        await fetch('http://localhost:8000/labels/' + label.id, {
-          method: 'DELETE'
-        })
+    labelService
+      .remove(label.id)
+      .then(data => {
         const newLabels = allLabels.filter(l => l.id != label.id)
         setAllLabels(newLabels)
       })
+      .catch(error => {
+        console.log(error)
+      })
+      //Handle Removing the deleted label from notes at server-side
   }
 
   //Event handler for editing a label
@@ -171,26 +144,15 @@ export default function EditLabels({ allLabels, setAllLabels }) {
     if(newText != "" && !labelAlreadyExists) {
       const editedLabel = {...label, name: newText}
 
-      fetch('http://localhost:8000/labels/' + label.id, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(editedLabel)
-      })
-        .then(response => {
-          if (!response.ok) {
-            throw new Error('Failed to edit Label');
-          }
-          // Handle success
+      labelService
+        .update(label.id, editedLabel)
+        .then(data => {
           console.log('Label edited successfully');
-          // Update state with note
+          // Update state with label
           let newLabels = allLabels.map((l) => (l.id === label.id ? editedLabel : l))
           setAllLabels(newLabels);
-    
         })
         .catch(error => {
-          // Handle error
           console.error(error);
         });
     }

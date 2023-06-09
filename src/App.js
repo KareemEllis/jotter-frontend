@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import Notes from './pages/Notes'
+import labelService from './services/labels'
 import Create from './pages/Create'
 import Layout from './components/Layout'
 import EditLabels from './pages/EditLabels'
@@ -9,11 +10,12 @@ function App() {
   const [allLabels, setAllLabels] = useState([])
 
   useEffect(() => { 
-      // Fatch Labels
-    fetch('http://localhost:8000/labels')
-      .then(res => res.json())
-      .then(data => {
-        setAllLabels(data)
+    // Fatch Labels
+    labelService
+      .getAll()
+      .then(data => setAllLabels(data))
+      .catch(error => {
+        console.log(error)
       })
   }, [])
 

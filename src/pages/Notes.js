@@ -21,6 +21,7 @@ export default function Notes({ allLabels, labelToView }) {
       .getAll()
       .then(notes => {
         if(labelToView == "") {
+          // Display all notes
           setNotes(notes)
         }
         else {
@@ -29,15 +30,20 @@ export default function Notes({ allLabels, labelToView }) {
           setNotes(filteredNotes);
         }
       })
+      .catch(error => {
+        console.log(error)
+      })
   }, [labelToView])
 
-
   const handleDelete = async (id) => {
-    await fetch('http://localhost:8000/notes/' + id, {
-      method: 'DELETE'
-    })
-    const newNotes = notes.filter(note => note.id != id)
-    setNotes(newNotes)
+    noteService
+      .remove(id)
+      .then(data => {
+        const newNotes = notes.filter(note => note.id != id)
+        setNotes(newNotes)
+      })
+      //SETUP API TO SEND A POSITIVE REPSONSE IF NOTE DOES NOT EXIST
+      .catch(error => console.log(error))
   }
 
   const updateLabels = async (note, labels) => {
@@ -46,31 +52,20 @@ export default function Notes({ allLabels, labelToView }) {
       "labels": labels
     }
 
-    await fetch('http://localhost:8000/notes/' + note.id, {
-      method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(updatedNote)
-    })
-    .then(response => {
-      if (!response.ok) {
-        throw new Error('Failed to update labels');
-      }
-      // Handle success
-      console.log('Labels updated successfully');
-      // Update state with note
-      let newNotes = notes.map((n) => (n.id === note.id ? updatedNote : n))
-      if(labelToView != "") {
-        newNotes = filterNotesByLabel(labelToView, newNotes)
-      }
-      setNotes(newNotes);
-
-    })
-    .catch(error => {
-      // Handle error
-      console.error(error);
-    });
+    noteService
+      .update(note.id, updatedNote)
+      .then(data => {
+        console.log('Labels updated successfully')
+        // Update state with note
+        let newNotes = notes.map((n) => (n.id === note.id ? updatedNote : n))
+        if(labelToView != "") {
+          newNotes = filterNotesByLabel(labelToView, newNotes)
+        }
+        setNotes(newNotes);
+      })
+      .catch(error => {
+        console.error(error);
+      });
   }
 
   const togglePin = async (note) => {
@@ -79,29 +74,17 @@ export default function Notes({ allLabels, labelToView }) {
       "pinned": !note.pinned
     }
 
-    await fetch('http://localhost:8000/notes/' + note.id, {
-      method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(updatedNote)
-    })
-    .then(response => {
-      if (!response.ok) {
-        throw new Error('Failed to update document');
-      }
-      // Handle success
-      console.log('Document updated successfully');
-      // Update state with note
-      const newNotes = notes.map((n) => (n.id === note.id ? updatedNote : n));
-      setNotes(newNotes);
-
-    })
-    .catch(error => {
-      // Handle error
-      console.log("ERROR")
-      console.error(error);
-    });
+    noteService
+      .update(note.id, updatedNote)
+      .then(data => {
+        console.log('Note Pinned status updated')
+        // Update state with note
+        const newNotes = notes.map((n) => (n.id === note.id ? updatedNote : n))
+        setNotes(newNotes)
+      })
+      .catch(error => {
+        console.error(error)
+      });
   }
 
 

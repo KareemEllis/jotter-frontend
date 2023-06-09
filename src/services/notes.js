@@ -8,17 +8,17 @@ const getAll = async () => {
 }
 
 const create = async (newNote) => {
-  const response = await axios.post(baseUrl, newNote);
+  const response = await axios.post(baseUrl, newNote)
   return response.data
 }
 
 const remove = async (id) => {
-  const response = await axios.delete(`${baseUrl}/${id}`);
+  const response = await axios.delete(`${baseUrl}/${id}`)
   return response.data
 }
 
 const update = async (id, updatedNote) => {
-  const response = await axios.update(`${baseUrl}/${id}`, updatedNote)
+  const response = await axios.patch(`${baseUrl}/${id}`, updatedNote)
   return response.data
 }
 

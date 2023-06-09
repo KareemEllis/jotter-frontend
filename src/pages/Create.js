@@ -1,3 +1,5 @@
+import noteService from '../services/notes'
+
 import React, { useState } from 'react'
 import Typography from '@mui/material/Typography'
 import Button from '@mui/material/Button'
@@ -26,12 +28,14 @@ export default function Create() {
       setDetailsError(true)
     }
     if (title && details) {
-      fetch('http://localhost:8000/notes', {
-        method: 'POST',
-        headers: {"Content-type": "application/json"},
-        body: JSON.stringify({ title, details, pinned: false })
-      })
-        .then(() => navigate('/'))
+      const newNote = { title, details, pinned: false, labels: [] }
+      noteService
+        .create(newNote)
+        .then((data) => navigate('/'))
+        .catch(error => {
+          //Error Alert
+          console.log(error)
+        })
     } 
   }
 
