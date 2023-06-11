@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import labelService from '../services/labels'
 
 import React, { useState, useEffect } from 'react'
@@ -26,19 +27,19 @@ export default function EditLabels({ allLabels, setAllLabels }) {
           return {
             id: label.id,
             error: false
-          };
+          }
         })
-      );
+      )
       setAllHelperTexts(
         allLabels.map(label => {
           return {
             id: label.id,
-            text: ""
-          };
+            text: ''
+          }
         })
-      );
+      )
     }
-  }, [allLabels]);
+  }, [allLabels])
 
   //Submit event for creating a new label
   const handleSubmit = (e) => {
@@ -58,7 +59,7 @@ export default function EditLabels({ allLabels, setAllLabels }) {
     }
 
     if (newLabel !== '' && !labelAlreadyExists) {
-      const newLabelObj = { "name": newLabel }
+      const newLabelObj = { 'name': newLabel }
 
       labelService
         .create(newLabelObj)
@@ -79,7 +80,7 @@ export default function EditLabels({ allLabels, setAllLabels }) {
   const handleDelete = (e, label) => {
     labelService
       .remove(label.id)
-      .then(data => {
+      .then(() => {
         const newLabels = allLabels.filter(l => l.id != label.id)
         setAllLabels(newLabels)
       })
@@ -124,41 +125,41 @@ export default function EditLabels({ allLabels, setAllLabels }) {
 
     const labelAlreadyExists = allLabels.some(l => l.name === newText) && newText != label.name
     changeErrorState(false)
-    changeHelperText("")
+    changeHelperText('')
 
     //Check if label is empty
     if(newText == '') {
-      console.log("Cannot be empty")
+      console.log('Cannot be empty')
       changeErrorState(true)
-      changeHelperText("Field cannot be left blank.")
+      changeHelperText('Field cannot be left blank.')
     }
 
     //Check if label already exists
     if(labelAlreadyExists) {
-      console.log("Already Exists")
+      console.log('Already Exists')
       changeErrorState(true)
-      changeHelperText("This label already exists.")
+      changeHelperText('This label already exists.')
     }
   }
 
   const handleBlur = (newText, label) => {
     const labelAlreadyExists = allLabels.some(l => l.name === newText) && newText != label.name
 
-    if(newText != "" && !labelAlreadyExists) {
+    if(newText != '' && !labelAlreadyExists) {
       const editedLabel = {...label, name: newText}
 
       labelService
         .update(label.id, editedLabel)
-        .then(data => {
-          console.log('Label edited successfully');
+        .then(() => {
+          console.log('Label edited successfully')
           // Update state with label
           let newLabels = allLabels.map((l) => (l.id === label.id ? editedLabel : l))
-          setAllLabels(newLabels);
+          setAllLabels(newLabels)
         })
         .catch(error => {
           // Error Alert
-          console.error(error);
-        });
+          console.error(error)
+        })
     }
   }
 
@@ -188,11 +189,11 @@ export default function EditLabels({ allLabels, setAllLabels }) {
         />
 
         <Button
-        type="submit" 
-        color="secondary" 
-        variant="contained"
-        endIcon={<KeyboardArrowRightIcon />}
-        margin="normal"
+          type="submit" 
+          color="secondary" 
+          variant="contained"
+          endIcon={<KeyboardArrowRightIcon />}
+          margin="normal"
         >
           Create
         </Button>
@@ -238,7 +239,7 @@ export default function EditLabels({ allLabels, setAllLabels }) {
                 fullWidth
                 sx={{ maxWidth: '500px' }}
                 error={labelError ? labelError.error : false}
-                helperText={helperText ? helperText.text : ""}
+                helperText={helperText ? helperText.text : ''}
                 margin="normal"
               />
             </Container>

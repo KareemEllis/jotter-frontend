@@ -1,9 +1,9 @@
-import axios from "axios"
+import axios from 'axios'
 
 const baseUrl = '/api/labels'
 
 const getAll = async () => {
-  const response = await axios.get(baseUrl);
+  const response = await axios.get(baseUrl)
   return response.data
 }
 

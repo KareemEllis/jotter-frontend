@@ -1,21 +1,22 @@
+/* eslint-disable react/prop-types */
 import React, { useEffect, useState } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
-import Box from '@mui/material/Box';
-import CssBaseline from '@mui/material/CssBaseline';
-import Divider from '@mui/material/Divider';
-import Drawer from '@mui/material/Drawer';
-import IconButton from '@mui/material/IconButton';
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import ListItemButton from '@mui/material/ListItemButton';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemText from '@mui/material/ListItemText';
-import MenuIcon from '@mui/icons-material/Menu';
-import Toolbar from '@mui/material/Toolbar';
-import Typography from '@mui/material/Typography';
+import Box from '@mui/material/Box'
+import CssBaseline from '@mui/material/CssBaseline'
+import Divider from '@mui/material/Divider'
+import Drawer from '@mui/material/Drawer'
+import IconButton from '@mui/material/IconButton'
+import List from '@mui/material/List'
+import ListItem from '@mui/material/ListItem'
+import ListItemButton from '@mui/material/ListItemButton'
+import ListItemIcon from '@mui/material/ListItemIcon'
+import ListItemText from '@mui/material/ListItemText'
+import MenuIcon from '@mui/icons-material/Menu'
+import Toolbar from '@mui/material/Toolbar'
+import Typography from '@mui/material/Typography'
 import { AddCircleOutlineOutlined, SubjectOutlined } from '@mui/icons-material/'
-import LabelIcon from '@mui/icons-material/Label';
-import EditIcon from '@mui/icons-material/Edit';
+import LabelIcon from '@mui/icons-material/Label'
+import EditIcon from '@mui/icons-material/Edit'
 import AppBar from '@mui/material/AppBar'
 
 export default function Layout({ children, labels }) {
@@ -30,8 +31,8 @@ export default function Layout({ children, labels }) {
   const [mobileOpen, setMobileOpen] = useState(false)
 
   const handleDrawerToggle = () => {
-    setMobileOpen(!mobileOpen);
-  };
+    setMobileOpen(!mobileOpen)
+  }
 
   useEffect(() => {
     const items = [
@@ -60,10 +61,10 @@ export default function Layout({ children, labels }) {
       text: label.name,
       icon: <LabelIcon color="secondary" />,
       path: `/label/${label.id}`
-    }));
+    }))
   
-    setMenuItems([...items, ...labelMenuItems]);
-  }, [labels]);
+    setMenuItems([...items, ...labelMenuItems])
+  }, [labels])
 
   const drawer = (
     <div>
@@ -85,7 +86,7 @@ export default function Layout({ children, labels }) {
         ))}
       </List>
     </div>
-  );
+  )
 
   return (
     <Box sx={{ display: 'flex' }} >
@@ -155,5 +156,5 @@ export default function Layout({ children, labels }) {
         { children }
       </Box>
     </Box>
-  );
+  )
 }

@@ -1,14 +1,14 @@
-import axios from "axios"
+import axios from 'axios'
 
 const baseUrl = '/api/notes'
 
 const getAll = async () => {
-  const response = await axios.get(baseUrl);
+  const response = await axios.get(baseUrl)
   return response.data
 }
 
 const get = async (id) => {
-  const response = await axios.get(`${baseUrl}/${id}`);
+  const response = await axios.get(`${baseUrl}/${id}`)
   return response.data
 }
 

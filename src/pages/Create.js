@@ -31,7 +31,7 @@ export default function Create() {
       const newNote = { title, details, pinned: false, labels: [] }
       noteService
         .create(newNote)
-        .then((data) => navigate('/'))
+        .then(() => navigate('/'))
         .catch(error => {
           //Error Alert
           console.log(error)

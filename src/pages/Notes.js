@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import noteService from '../services/notes'
 
 import React, { useEffect, useState } from 'react'
@@ -7,7 +8,7 @@ import Masonry from '@mui/lab/Masonry'
 import Typography from '@mui/material/Typography'
 
 export default function Notes({ allLabels, labelToView }) {
-  const [notes, setNotes] = useState([]);
+  const [notes, setNotes] = useState([])
 
   const filterNotesByLabel = (label, notesToFilter) => {
     return notesToFilter.filter(note =>
@@ -20,14 +21,14 @@ export default function Notes({ allLabels, labelToView }) {
     noteService
       .getAll()
       .then(notes => {
-        if(labelToView === "") {
+        if(labelToView === '') {
           // Display all notes
           setNotes(notes)
         }
         else {
           // Filter notes based on the labelToView
           const filteredNotes = filterNotesByLabel(labelToView, notes)
-          setNotes(filteredNotes);
+          setNotes(filteredNotes)
         }
       })
       .catch(error => {
@@ -39,7 +40,7 @@ export default function Notes({ allLabels, labelToView }) {
   const handleDelete = async (id) => {
     noteService
       .remove(id)
-      .then(data => {
+      .then(() => {
         const newNotes = notes.filter(note => note.id !== id)
         setNotes(newNotes)
       })
@@ -50,29 +51,29 @@ export default function Notes({ allLabels, labelToView }) {
   const updateLabels = async (note, labels) => {
     const updatedNote = {
       ...note,
-      "labels": labels
+      'labels': labels
     }
 
     noteService
       .update(note.id, updatedNote)
-      .then(data => {
+      .then(() => {
         console.log('Labels updated successfully')
         // Update state with note
         let newNotes = notes.map((n) => (n.id === note.id ? updatedNote : n))
-        if(labelToView !== "") {
+        if(labelToView !== '') {
           newNotes = filterNotesByLabel(labelToView, newNotes)
         }
-        setNotes(newNotes);
+        setNotes(newNotes)
       })
       .catch(error => {
-        console.error(error);
-      });
+        console.error(error)
+      })
   }
 
   const togglePin = async (note) => {
     const updatedNote = {
       ...note,
-      "pinned": !note.pinned
+      'pinned': !note.pinned
     }
 
     noteService
@@ -124,36 +125,36 @@ export default function Notes({ allLabels, labelToView }) {
         component="h2"
         gutterBottom
       >
-        {labelToView === "" ? "My Notes" : labelToView.name}
+        {labelToView === '' ? 'My Notes' : labelToView.name}
       </Typography>
 
       {
         // CHECK IF THERE ARE PINNED NOTES
         pinned.length > 0 ?
-        <div>
-          <Typography variant="subtitle2" gutterBottom>
-            PINNED
-          </Typography>
-          <Masonry columns={{xs: 1, md: 2, lg: 3}} spacing={2}>
-            {pinned}
-          </Masonry>
-        </div>
-        :
-        ""
+          <div>
+            <Typography variant="subtitle2" gutterBottom>
+              PINNED
+            </Typography>
+            <Masonry columns={{xs: 1, md: 2, lg: 3}} spacing={2}>
+              {pinned}
+            </Masonry>
+          </div>
+          :
+          ''
       }
       
       {
         // CHECK IF THERE ARE UNPINNED NOTES
         unPinned.length > 0 ?
-        <div>
-          {pinned.length > 0 ? <Typography variant="subtitle2" gutterBottom>OTHERS</Typography> : ""}
-          
-          <Masonry columns={{xs: 1, md: 2, lg: 3}} spacing={2}>
-            {unPinned}
-          </Masonry>
-        </div>
-        :
-        ""
+          <div>
+            {pinned.length > 0 ? <Typography variant="subtitle2" gutterBottom>OTHERS</Typography> : ''}
+            
+            <Masonry columns={{xs: 1, md: 2, lg: 3}} spacing={2}>
+              {unPinned}
+            </Masonry>
+          </div>
+          :
+          ''
       }
     </Container>
   )
