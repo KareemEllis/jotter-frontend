@@ -26,27 +26,7 @@ export default function Layout({ children, labels }) {
     background: '#f4f4f4'
   }
 
-  const [menuItems, setMenuItems] = useState([
-    { 
-      id: 'My Notes',
-      text: 'My Notes', 
-      icon: <SubjectOutlined color="secondary" />, 
-      path: '/' 
-    },
-    { 
-      id: 'Create Note', 
-      text: 'Create Note', 
-      icon: <AddCircleOutlineOutlined color="secondary" />, 
-      path: '/create' 
-    },
-    { 
-      id: 'Edit Labels', 
-      text: 'Edit Labels', 
-      icon: <EditIcon color="secondary" />, 
-      path: '/labels' 
-    }
-  ])
-
+  const [menuItems, setMenuItems] = useState([])
   const [mobileOpen, setMobileOpen] = useState(false)
 
   const handleDrawerToggle = () => {
@@ -54,6 +34,27 @@ export default function Layout({ children, labels }) {
   };
 
   useEffect(() => {
+    const items = [
+      { 
+        id: 'My Notes',
+        text: 'My Notes', 
+        icon: <SubjectOutlined color="secondary" />, 
+        path: '/' 
+      },
+      { 
+        id: 'Create Note', 
+        text: 'Create Note', 
+        icon: <AddCircleOutlineOutlined color="secondary" />, 
+        path: '/create' 
+      },
+      { 
+        id: 'Edit Labels', 
+        text: 'Edit Labels', 
+        icon: <EditIcon color="secondary" />, 
+        path: '/labels' 
+      }
+    ]
+
     const labelMenuItems = labels.map(label => ({
       id: label.id,
       text: label.name,
@@ -61,12 +62,7 @@ export default function Layout({ children, labels }) {
       path: `/label/${label.id}`
     }));
   
-    setMenuItems(prevItems => {
-      // Remove duplicate menu items
-      const filteredItems = prevItems.filter(item => !labels.find(label => label.id === item.id));
-      // Combine existing and new menu items
-      return [...filteredItems, ...labelMenuItems];
-    });
+    setMenuItems([...items, ...labelMenuItems]);
   }, [labels]);
 
   const drawer = (

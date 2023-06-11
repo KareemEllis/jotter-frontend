@@ -1,6 +1,6 @@
 import axios from "axios"
 
-const baseUrl = 'http://localhost:8000/labels'
+const baseUrl = '/api/labels'
 
 const getAll = async () => {
   const response = await axios.get(baseUrl);

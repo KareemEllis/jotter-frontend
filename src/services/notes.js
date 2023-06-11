@@ -1,9 +1,14 @@
 import axios from "axios"
 
-const baseUrl = 'http://localhost:8000/notes'
+const baseUrl = '/api/notes'
 
 const getAll = async () => {
   const response = await axios.get(baseUrl);
+  return response.data
+}
+
+const get = async (id) => {
+  const response = await axios.get(`${baseUrl}/${id}`);
   return response.data
 }
 
@@ -23,7 +28,8 @@ const update = async (id, updatedNote) => {
 }
 
 export default { 
-  getAll, 
+  getAll,
+  get,
   create, 
   remove,
   update

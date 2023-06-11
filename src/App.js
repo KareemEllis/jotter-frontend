@@ -16,6 +16,10 @@ function App() {
       .then(data => setAllLabels(data))
       .catch(error => {
         console.log(error)
+        //Network error message
+
+        //////////////////////////////
+        //Show Try again later message component
       })
   }, [])
 

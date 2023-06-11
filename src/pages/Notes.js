@@ -20,7 +20,7 @@ export default function Notes({ allLabels, labelToView }) {
     noteService
       .getAll()
       .then(notes => {
-        if(labelToView == "") {
+        if(labelToView === "") {
           // Display all notes
           setNotes(notes)
         }
@@ -31,6 +31,7 @@ export default function Notes({ allLabels, labelToView }) {
         }
       })
       .catch(error => {
+        // Network Error message
         console.log(error)
       })
   }, [labelToView])
@@ -39,7 +40,7 @@ export default function Notes({ allLabels, labelToView }) {
     noteService
       .remove(id)
       .then(data => {
-        const newNotes = notes.filter(note => note.id != id)
+        const newNotes = notes.filter(note => note.id !== id)
         setNotes(newNotes)
       })
       //SETUP API TO SEND A POSITIVE REPSONSE IF NOTE DOES NOT EXIST
@@ -58,7 +59,7 @@ export default function Notes({ allLabels, labelToView }) {
         console.log('Labels updated successfully')
         // Update state with note
         let newNotes = notes.map((n) => (n.id === note.id ? updatedNote : n))
-        if(labelToView != "") {
+        if(labelToView !== "") {
           newNotes = filterNotesByLabel(labelToView, newNotes)
         }
         setNotes(newNotes);
@@ -77,6 +78,7 @@ export default function Notes({ allLabels, labelToView }) {
     noteService
       .update(note.id, updatedNote)
       .then(data => {
+        console.log(data)
         console.log('Note Pinned status updated')
         // Update state with note
         const newNotes = notes.map((n) => (n.id === note.id ? updatedNote : n))
@@ -84,7 +86,7 @@ export default function Notes({ allLabels, labelToView }) {
       })
       .catch(error => {
         console.error(error)
-      });
+      })
   }
 
 
@@ -115,7 +117,6 @@ export default function Notes({ allLabels, labelToView }) {
   ))
 
   return (
-    
     <Container>
       <Typography
         variant="h6" 
@@ -123,7 +124,7 @@ export default function Notes({ allLabels, labelToView }) {
         component="h2"
         gutterBottom
       >
-        {labelToView == "" ? "My Notes" : labelToView.name}
+        {labelToView === "" ? "My Notes" : labelToView.name}
       </Typography>
 
       {

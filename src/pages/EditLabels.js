@@ -48,7 +48,7 @@ export default function EditLabels({ allLabels, setAllLabels }) {
 
     const labelAlreadyExists = allLabels.some(l => l.name === newLabel)
 
-    if (newLabel == '') {
+    if (newLabel === '') {
       setNewLabelError(true)
       setLabelNameHelperText('Field cannot be left blank.')
     }
@@ -57,16 +57,19 @@ export default function EditLabels({ allLabels, setAllLabels }) {
       setLabelNameHelperText('This label already exists.')
     }
 
-    if (newLabel != '' && !labelAlreadyExists) {
+    if (newLabel !== '' && !labelAlreadyExists) {
       const newLabelObj = { "name": newLabel }
 
       labelService
         .create(newLabelObj)
-        .then((data) => {
-          //GET RETURNED LABEL OBJ AND ADD TO STATE USING THE ID
+        .then((returnedLabel) => {
+          console.log(returnedLabel)
+          const newLabels = [...allLabels, returnedLabel]
+          setAllLabels(newLabels)
           setNewLabel('')
         })
         .catch(error => {
+          //Error Alert
           console.log(error)
         })
     } 
@@ -153,6 +156,7 @@ export default function EditLabels({ allLabels, setAllLabels }) {
           setAllLabels(newLabels);
         })
         .catch(error => {
+          // Error Alert
           console.error(error);
         });
     }
@@ -171,6 +175,7 @@ export default function EditLabels({ allLabels, setAllLabels }) {
 
       <form noValidate autoComplete="off" onSubmit={handleSubmit}>
         <TextField
+          value={newLabel}
           onChange={(e) => setNewLabel(e.target.value)}
           label="New Label" 
           variant="outlined" 
