@@ -5,9 +5,33 @@ import labelService from './services/labels'
 import Create from './pages/Create'
 import Layout from './components/Layout'
 import EditLabels from './pages/EditLabels'
+import Snackbar from '@mui/material/Snackbar'
+import IconButton from '@mui/material/IconButton'
+import CloseIcon from '@mui/icons-material/Close'
 
 function App() {
   const [allLabels, setAllLabels] = useState([])
+
+  const [snackBarMsg, setSnackBarMsg] = useState('')
+  const [snackBarOpen, setSnackBarOpen] = useState(false)
+
+  const handleSnackClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return
+    }
+    setSnackBarOpen(false)
+  }
+
+  const action = (
+    <IconButton
+      size="small"
+      aria-label="close"
+      color="inherit"
+      onClick={handleSnackClose}
+    >
+      <CloseIcon fontSize="small" />
+    </IconButton>
+  )
 
   useEffect(() => { 
     // Fatch Labels
@@ -16,10 +40,8 @@ function App() {
       .then(data => setAllLabels(data))
       .catch(error => {
         console.log(error)
-        //Network error message
-
-        //////////////////////////////
-        //Show Try again later message component
+        setSnackBarOpen(true)
+        setSnackBarMsg('Network Error')
       })
   }, [])
 
@@ -53,6 +75,14 @@ function App() {
           }
         </Routes>
       </Layout>
+
+      <Snackbar
+        open={snackBarOpen} 
+        autoHideDuration={6000} 
+        onClose={handleSnackClose}
+        message={snackBarMsg}
+        action={action}
+      />
     </Router>
   )
 }

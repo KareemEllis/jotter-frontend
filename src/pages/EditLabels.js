@@ -10,6 +10,8 @@ import Tooltip from '@mui/material/Tooltip'
 import IconButton from '@mui/material/IconButton'
 import DeleteOutlined from '@mui/icons-material/DeleteOutlined'
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight'
+import Snackbar from '@mui/material/Snackbar'
+import CloseIcon from '@mui/icons-material/Close'
 
 export default function EditLabels({ allLabels, setAllLabels }) {
   const [newLabel, setNewLabel] = useState('')
@@ -18,6 +20,9 @@ export default function EditLabels({ allLabels, setAllLabels }) {
 
   const [allLabelErrors, setAllLabelErrors] = useState([])
   const [allHelperTexts, setAllHelperTexts] = useState([])
+
+  const [snackBarMsg, setSnackBarMsg] = useState('')
+  const [snackBarOpen, setSnackBarOpen] = useState(false)
 
   //Set up error and helper text states for labels to be edited
   useEffect(() => {
@@ -40,6 +45,19 @@ export default function EditLabels({ allLabels, setAllLabels }) {
       )
     }
   }, [allLabels])
+
+  //Handle closing of the snackbar
+  const handleSnackClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return
+    }
+    setSnackBarOpen(false)
+  }
+
+  const showSnackBar = (message) => {
+    setSnackBarMsg(message)
+    setSnackBarOpen(true)
+  }
 
   //Submit event for creating a new label
   const handleSubmit = (e) => {
@@ -68,10 +86,12 @@ export default function EditLabels({ allLabels, setAllLabels }) {
           const newLabels = [...allLabels, returnedLabel]
           setAllLabels(newLabels)
           setNewLabel('')
+          showSnackBar('Successfully created label!')
         })
         .catch(error => {
           //Error Alert
           console.log(error)
+          showSnackBar('Failed to create label.')
         })
     } 
   }
@@ -83,9 +103,12 @@ export default function EditLabels({ allLabels, setAllLabels }) {
       .then(() => {
         const newLabels = allLabels.filter(l => l.id != label.id)
         setAllLabels(newLabels)
+        setSnackBarOpen(true)
+        setSnackBarMsg('Successfully deleted label!')
       })
       .catch(error => {
         console.log(error)
+        showSnackBar('Failed to delete label.')
       })
       //Handle Removing the deleted label from notes at server-side
   }
@@ -151,7 +174,7 @@ export default function EditLabels({ allLabels, setAllLabels }) {
       labelService
         .update(label.id, editedLabel)
         .then(() => {
-          console.log('Label edited successfully')
+          showSnackBar('Successfully edited label!')
           // Update state with label
           let newLabels = allLabels.map((l) => (l.id === label.id ? editedLabel : l))
           setAllLabels(newLabels)
@@ -159,9 +182,21 @@ export default function EditLabels({ allLabels, setAllLabels }) {
         .catch(error => {
           // Error Alert
           console.error(error)
+          showSnackBar('Failed to edit label.')
         })
     }
   }
+
+  const action = (
+    <IconButton
+      size="small"
+      aria-label="close"
+      color="inherit"
+      onClick={handleSnackClose}
+    >
+      <CloseIcon fontSize="small" />
+    </IconButton>
+  )
 
   return (
     <Container size="sm">
@@ -247,6 +282,15 @@ export default function EditLabels({ allLabels, setAllLabels }) {
           
         })
       }
+
+      <Snackbar
+        open={snackBarOpen} 
+        autoHideDuration={6000} 
+        onClose={handleSnackClose}
+        message={snackBarMsg}
+        action={action}
+      />
+
     </Container>
   )
 }
