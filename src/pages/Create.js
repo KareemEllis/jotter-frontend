@@ -9,6 +9,7 @@ import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight'
 import TextField from '@mui/material/TextField'
 import IconButton from '@mui/material/IconButton'
 import CloseIcon from '@mui/icons-material/Close'
+import CircularProgress from '@mui/material/CircularProgress'
 
 import { useNavigate } from 'react-router-dom'
 
@@ -21,6 +22,7 @@ export default function Create() {
   const [titleHelperText, setTitleHelperText] = useState('')
   const [detailsHelperText, setDetailsHelperText] = useState('')
 
+  const [loading, setLoading] = useState(false)
   const [snackBarMsg, setSnackBarMsg] = useState('')
   const [snackBarOpen, setSnackBarOpen] = useState(false)
 
@@ -52,15 +54,18 @@ export default function Create() {
       setDetailsHelperText('Field cannot be left blank.')
     }
     if (title && details) {
+      setLoading(true)
       const newNote = { title, details, pinned: false, labels: [] }
       noteService
         .create(newNote)
         .then(() => {
+          setLoading(false)
           showSnackBar('Successfully created note!')
           navigate('/')
         })
         .catch(error => {
           console.log(error)
+          setLoading(false)
           showSnackBar('Failed to create note.')
         })
     } 
@@ -117,7 +122,7 @@ export default function Create() {
           type="submit" 
           color="secondary" 
           variant="contained"
-          endIcon={<KeyboardArrowRightIcon />}
+          endIcon={ loading ? <CircularProgress color="inherit" size={20} /> : <KeyboardArrowRightIcon />}
           margin="normal"
         >
           Submit

@@ -6,6 +6,7 @@ import Tooltip from '@mui/material/Tooltip'
 import Menu from '@mui/material/Menu'
 import MenuItem from '@mui/material/MenuItem'
 import Chip from '@mui/material/Chip'
+import LinearProgress from '@mui/material/LinearProgress'
 
 //CARD
 import Card from '@mui/material/Card'
@@ -26,10 +27,11 @@ import PushPinIcon from '@mui/icons-material/PushPin'
 import MoreVertIcon from '@mui/icons-material/MoreVert'
 import AddCircleIcon from '@mui/icons-material/AddCircle'
 
-export default function NoteCard({ note, updateLabels, allLabels, handleDelete, togglePin }) {
+export default function NoteCard({ note, updateLabels, allLabels, deleteNote, togglePin }) {
 
   //Menu Popup
   const [anchorEl, setAnchorEl] = useState(null)
+  const [cardMenuLoading, setCardMenuLoading] = useState(false)
   const open = Boolean(anchorEl)
   
   //Handle Opening the Card Menu
@@ -44,7 +46,9 @@ export default function NoteCard({ note, updateLabels, allLabels, handleDelete, 
 
   //Label Menu Popup
   const [anchorLabelEl, setAnchorLabelEl] = useState(null)
+  const [labelMenuLoading, setLabelMenuLoading] = useState(false)
   const labelMenuOpen = Boolean(anchorLabelEl)
+  
 
   //Handle Opening the Card Label Menu
   const handleLabelMenuClick = (event) => {
@@ -56,16 +60,48 @@ export default function NoteCard({ note, updateLabels, allLabels, handleDelete, 
     setAnchorLabelEl(null)
   }
 
-  //Handle Changind the cards labels
-  const handleLabelChange = (event, label) => {
-    const checked = event.target.checked
-    if(checked) {
-      const newLabels = [...note.labels, label]
-      updateLabels(note, newLabels)
+  //Handle deleting note
+  const handleDelete = async () => {
+    setCardMenuLoading(true)
+
+    try {
+      await deleteNote(note.id)
+    } catch (error) {
+      console.log(error)
+    } finally {
+      setCardMenuLoading(false)
     }
-    else {
-      const newLabels = note.labels.filter(l => l != label)
-      updateLabels(note, newLabels)
+  }
+
+  const handlePin = async () => {
+    setCardMenuLoading(true)
+
+    try {
+      await togglePin(note)
+    } catch (error) {
+      console.log(error)
+    } finally {
+      setCardMenuLoading(false)
+    }
+  }
+
+  //Handle Changind the cards labels
+  const handleLabelChange = async (event, label) => {
+    const checked = event.target.checked
+    setLabelMenuLoading(true)
+
+    try {
+      if (checked) {
+        const newLabels = [...note.labels, label]
+        await updateLabels(note, newLabels)
+      } else {
+        const newLabels = note.labels.filter((l) => l !== label)
+        await updateLabels(note, newLabels)
+      }
+    } catch (error) {
+      console.log(error)
+    } finally {
+      setLabelMenuLoading(false)
     }
   }
 
@@ -104,10 +140,12 @@ export default function NoteCard({ note, updateLabels, allLabels, handleDelete, 
             </div>
           }
           title={note.title}
+          sx={{ wordBreak: 'break-word' }}
+          
         />
 
         <CardContent>
-          <Typography variant="body2" color="textSecondary">
+          <Typography variant="body2" color="textSecondary" sx={{ wordBreak: 'break-word' }} > 
             { note.details }
           </Typography>
         </CardContent>
@@ -138,22 +176,26 @@ export default function NoteCard({ note, updateLabels, allLabels, handleDelete, 
 
       
 
-
-
       {/* CARD OPTIONS MENU */}
       <Menu
         anchorEl={anchorEl}
         open={open}
         onClose={handleMenuClose}
       >
-        <MenuItem key={'Delete'}  onClick={() => handleDelete(note.id)}>
+        <MenuItem key={'Delete'}  onClick={handleDelete}>
           <DeleteOutlined />
           Delete
         </MenuItem>
-        <MenuItem key={'Pin'}  onClick={() => togglePin(note)}>
+        <MenuItem key={'Pin'}  onClick={handlePin}>
           {note.pinned ? <PushPinIcon /> : <PushPinOutlinedIcon />}
           {note.pinned ? 'Unpin' : 'Pin'}
         </MenuItem>
+        {
+          cardMenuLoading ?
+            <LinearProgress sx={{ position: 'absolute', bottom: 0, left: 0, width: '100%' }}/>
+            : 
+            ''
+        }
       </Menu>
 
       {/* LABEL MENU */}
@@ -167,6 +209,12 @@ export default function NoteCard({ note, updateLabels, allLabels, handleDelete, 
             {labelCheckBoxes}
           </FormGroup>
         </Container>
+        {
+          labelMenuLoading ?
+            <LinearProgress sx={{ position: 'absolute', bottom: 0, left: 0, width: '100%' }}/>
+            : 
+            ''
+        }
       </Menu>
       
     </div>

@@ -4,6 +4,7 @@ import labelService from '../services/labels'
 import React, { useState, useEffect } from 'react'
 import Typography from '@mui/material/Typography'
 import Container from '@mui/material/Container'
+import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import TextField from '@mui/material/TextField'
 import Tooltip from '@mui/material/Tooltip'
@@ -12,19 +13,23 @@ import DeleteOutlined from '@mui/icons-material/DeleteOutlined'
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight'
 import Snackbar from '@mui/material/Snackbar'
 import CloseIcon from '@mui/icons-material/Close'
+import CircularProgress from '@mui/material/CircularProgress'
 
 export default function EditLabels({ allLabels, setAllLabels }) {
   const [newLabel, setNewLabel] = useState('')
   const [newLabelError, setNewLabelError] = useState(false)
   const [labelNameHelperText, setLabelNameHelperText] = useState('')
+  const [newLabelLoading, setNewLabelLoading] = useState(false)
 
   const [allLabelErrors, setAllLabelErrors] = useState([])
   const [allHelperTexts, setAllHelperTexts] = useState([])
+  const [allLoading, setAllLoading] = useState([])
 
   const [snackBarMsg, setSnackBarMsg] = useState('')
   const [snackBarOpen, setSnackBarOpen] = useState(false)
+  
 
-  //Set up error and helper text states for labels to be edited
+  //Set up error, helper text and loading animation states for labels to be edited
   useEffect(() => {
     if (allLabels.length > 0) {
       setAllLabelErrors(
@@ -43,8 +48,32 @@ export default function EditLabels({ allLabels, setAllLabels }) {
           }
         })
       )
+      setAllLoading(
+        allLabels.map(label => {
+          return {
+            id: label.id,
+            bool: false
+          }
+        })
+      )
     }
   }, [allLabels])
+
+  //Change the state of a label's loading animation
+  const changeLoadState = (label, bool) => {
+    const animations = allLoading.map(loading => {
+      if (loading.id == label.id) {
+        return {
+          id: label.id,
+          bool: bool
+        }
+      }
+      else {
+        return loading
+      }
+    })
+    setAllLoading(animations)
+  } 
 
   //Handle closing of the snackbar
   const handleSnackClose = (event, reason) => {
@@ -78,6 +107,7 @@ export default function EditLabels({ allLabels, setAllLabels }) {
 
     if (newLabel !== '' && !labelAlreadyExists) {
       const newLabelObj = { 'name': newLabel }
+      setNewLabelLoading(true)
 
       labelService
         .create(newLabelObj)
@@ -87,17 +117,21 @@ export default function EditLabels({ allLabels, setAllLabels }) {
           setAllLabels(newLabels)
           setNewLabel('')
           showSnackBar('Successfully created label!')
+          setNewLabelLoading(false)
         })
         .catch(error => {
           //Error Alert
           console.log(error)
           showSnackBar('Failed to create label.')
+          setNewLabelLoading(false)
         })
     } 
   }
 
   //Delete label
   const handleDelete = (e, label) => {
+    changeLoadState(label, true)
+
     labelService
       .remove(label.id)
       .then(() => {
@@ -105,10 +139,12 @@ export default function EditLabels({ allLabels, setAllLabels }) {
         setAllLabels(newLabels)
         setSnackBarOpen(true)
         setSnackBarMsg('Successfully deleted label!')
+        changeLoadState(label, false)
       })
       .catch(error => {
         console.log(error)
         showSnackBar('Failed to delete label.')
+        changeLoadState(label, false)
       })
       //Handle Removing the deleted label from notes at server-side
   }
@@ -170,6 +206,7 @@ export default function EditLabels({ allLabels, setAllLabels }) {
 
     if(newText != '' && !labelAlreadyExists) {
       const editedLabel = {...label, name: newText}
+      changeLoadState(label, true)
 
       labelService
         .update(label.id, editedLabel)
@@ -178,15 +215,18 @@ export default function EditLabels({ allLabels, setAllLabels }) {
           // Update state with label
           let newLabels = allLabels.map((l) => (l.id === label.id ? editedLabel : l))
           setAllLabels(newLabels)
+          changeLoadState(label, false)
         })
         .catch(error => {
           // Error Alert
           console.error(error)
           showSnackBar('Failed to edit label.')
+          changeLoadState(label, false)
         })
     }
   }
 
+  // Action for Snackbar
   const action = (
     <IconButton
       size="small"
@@ -227,7 +267,7 @@ export default function EditLabels({ allLabels, setAllLabels }) {
           type="submit" 
           color="secondary" 
           variant="contained"
-          endIcon={<KeyboardArrowRightIcon />}
+          endIcon={ newLabelLoading ? <CircularProgress color="inherit" size={20} /> : <KeyboardArrowRightIcon />}
           margin="normal"
         >
           Create
@@ -247,11 +287,13 @@ export default function EditLabels({ allLabels, setAllLabels }) {
         allLabels.map(label => {
           //Get the error state for current label
           const labelError = allLabelErrors.find(item => item.id == label.id)
-          //Get helper text state for current label
+          //Get the helper text state for current label
           const helperText = allHelperTexts.find(item => item.id == label.id)
+          //Get the loading animation for current label
+          const loading = allLoading.find(item => item.id == label.id)
 
           return (
-            <Container 
+            <Box 
               key={label.name}
               sx={{ display: 'flex', alignItems: 'center' }}
             >
@@ -277,7 +319,12 @@ export default function EditLabels({ allLabels, setAllLabels }) {
                 helperText={helperText ? helperText.text : ''}
                 margin="normal"
               />
-            </Container>
+              {loading ?
+                loading.bool ? <CircularProgress color="secondary" size={25} /> : ''
+                :
+                ''
+              }
+            </Box>
           )
           
         })
