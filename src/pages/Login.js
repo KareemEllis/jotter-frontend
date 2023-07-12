@@ -7,6 +7,7 @@ import Alert from '@mui/material/Alert'
 import Link from '@mui/material/Link'
 import Box from '@mui/material/Box'
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined'
+import CircularProgress from '@mui/material/CircularProgress'
 import Typography from '@mui/material/Typography'
 import Container from '@mui/material/Container'
 
@@ -31,6 +32,7 @@ export default function Login() {
   const navigate = useNavigate()
   const dispatch = useDispatch()
   const user = useSelector(state => state.user)
+  const [loading, setLoading] = useState(false)
 
   if(user) {
     console.log('User already logged in. Redirecting to home page')
@@ -63,12 +65,15 @@ export default function Login() {
 
     if(username && password){
       try {
+        setLoading(true)
         console.log('Dispatching login action')
         await dispatch(loginUser(username, password))
         console.log('Should be navigating to Home page after login')
+        setLoading(false)
         navigate('/')
       } 
       catch (error) {
+        setLoading(false)
         console.log(error)
         if(error.message == 401) {
           setAlertActive(true)
@@ -121,7 +126,7 @@ export default function Login() {
             variant="contained"
             sx={{ mt: 3, mb: 2 }}
           >
-              Sign In
+            {loading ? <CircularProgress color="inherit" size={20} /> : 'Sign In'}
           </Button>
           {
             alertActive &&
@@ -130,7 +135,11 @@ export default function Login() {
             </Alert>
           }
           
-          <Link href="#" variant="body2">
+          <Link 
+            component="button"
+            variant="body2"
+            onClick={() => navigate('/register')}
+          >
             {'Don\'t have an account? Sign Up'}
           </Link>
         </Box>

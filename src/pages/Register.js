@@ -7,6 +7,7 @@ import Link from '@mui/material/Link'
 import Grid from '@mui/material/Grid'
 import Box from '@mui/material/Box'
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined'
+import CircularProgress from '@mui/material/CircularProgress'
 import Typography from '@mui/material/Typography'
 import Container from '@mui/material/Container'
 
@@ -31,6 +32,7 @@ export default function SignUp() {
   const navigate = useNavigate()
 
   const user = useSelector(state => state.user)
+  const [loading, setLoading] = useState(false)
 
   if(user) {
     console.log('User already logged in. Redirecting to home page')
@@ -101,13 +103,15 @@ export default function SignUp() {
     }
 
     if(!firstNameError && !lastNameError && !usernameError && !passwordError) {
-      console.log('Creating user')
+      setLoading(true)
       //Create user
       await userService.create(`${firstName} ${lastName}`, username, password)
         .then(() => {
+          setLoading(false)
           navigate('/login')
         })
         .catch(error => {
+          setLoading(false)
           console.log(error)
           if (error.message == 'username not unique') {
             changeUsernameError('Username already exists.', true)
@@ -185,12 +189,16 @@ export default function SignUp() {
             variant="contained"
             sx={{ mt: 3, mb: 2 }}
           >
-              Sign Up
+            {loading ? <CircularProgress color="inherit" size={20} /> : 'Sign Up'}
           </Button>
           <Grid container justifyContent="flex-end">
             <Grid item>
-              <Link href="#" variant="body2">
-                  Already have an account? Sign in
+              <Link 
+                component="button"
+                variant="body2"
+                onClick={() => navigate('/login')}
+              >
+                Already have an account? Sign in
               </Link>
             </Grid>
           </Grid>
