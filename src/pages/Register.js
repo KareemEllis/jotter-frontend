@@ -10,6 +10,7 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined'
 import Typography from '@mui/material/Typography'
 import Container from '@mui/material/Container'
 
+import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import userService from '../services/users'
 
@@ -29,6 +30,12 @@ function Copyright(props) {
 export default function SignUp() {
   const navigate = useNavigate()
 
+  const user = useSelector(state => state.user)
+
+  if(user) {
+    console.log('User already logged in. Redirecting to home page')
+    navigate('/')
+  }
   const [firstNameHelper, setFirstNameHelper] = useState('')
   const [firstNameError, setFirstNameError] = useState(false)
   const [lastNameHelper, setLastNameHelper] = useState('')
@@ -97,9 +104,8 @@ export default function SignUp() {
       console.log('Creating user')
       //Create user
       await userService.create(`${firstName} ${lastName}`, username, password)
-        .then((data) => {
-          console.log(data)
-          //navigate('/login')
+        .then(() => {
+          navigate('/login')
         })
         .catch(error => {
           console.log(error)

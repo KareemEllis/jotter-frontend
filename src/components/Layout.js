@@ -20,10 +20,8 @@ import LabelIcon from '@mui/icons-material/Label'
 import EditIcon from '@mui/icons-material/Edit'
 import AppBar from '@mui/material/AppBar'
 
-import userService from '../services/users'
 import { useDispatch, useSelector } from 'react-redux'
 import { logoutUser } from '../reducers/userReducer'
-import { getConfig } from '../config'
 
 export default function Layout({ children, userLoaded }) {
   const drawerWidth = 240
@@ -37,9 +35,11 @@ export default function Layout({ children, userLoaded }) {
   
   useEffect(() => {
     if(!user && userLoaded) {
+      console.log('User not logged in')
+      console.log('Should redirect to login page')
       navigate('/login')
     }
-  }, [user])
+  }, [user, userLoaded])
 
   const [mobileOpen, setMobileOpen] = useState(false)
 

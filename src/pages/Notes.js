@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import Container from '@mui/material/Container'
 import NoteCard from '../components/NoteCard'
 import Masonry from '@mui/lab/Masonry'

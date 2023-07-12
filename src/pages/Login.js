@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import Avatar from '@mui/material/Avatar'
 import Button from '@mui/material/Button'
 import CssBaseline from '@mui/material/CssBaseline'
@@ -74,16 +74,6 @@ export default function Login() {
           setAlertActive(true)
         }
       }
-      // await userService.login(username, password)
-      //   .then((data) => {
-      //     navigate('/')
-      //   })
-      //   .catch(error => {
-      //     console.log(error)
-      //     if (error.message == 401) {
-      //       setAlertActive(true)
-      //     }
-      //   })
     }    
   }
 

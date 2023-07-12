@@ -22,6 +22,9 @@ function App() {
   const user = useSelector(state => state.user)
   const [userLoaded, setUserLoaded] = useState(false)
   let isInitialized = user ? true : false
+  console.log('User:')
+  console.log(user)
+  console.log(`isInitialized: ${isInitialized}`)
 
   const [snackBarMsg, setSnackBarMsg] = useState('')
   const [snackBarOpen, setSnackBarOpen] = useState(false)
