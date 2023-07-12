@@ -1,12 +1,9 @@
 /* eslint-disable react/prop-types */
 import React, { useState } from 'react'
-import Container from '@mui/material/Container'
 import Typography from '@mui/material/Typography'
 import Tooltip from '@mui/material/Tooltip'
-import Menu from '@mui/material/Menu'
-import MenuItem from '@mui/material/MenuItem'
 import Chip from '@mui/material/Chip'
-import LinearProgress from '@mui/material/LinearProgress'
+import { darken, lighten } from '@mui/material/styles'
 
 //CARD
 import Card from '@mui/material/Card'
@@ -14,118 +11,76 @@ import CardHeader from '@mui/material/CardHeader'
 import CardContent from '@mui/material/CardContent'
 import CardActions from '@mui/material/CardActions'
 
-//INPUTS
-import FormGroup from '@mui/material/FormGroup'
-import FormControlLabel from '@mui/material/FormControlLabel'
-import Checkbox from '@mui/material/Checkbox'
-
 //ICONS
 import IconButton from '@mui/material/IconButton'
-import DeleteOutlined from '@mui/icons-material/DeleteOutlined'
-import PushPinOutlinedIcon from '@mui/icons-material/PushPinOutlined'
-import PushPinIcon from '@mui/icons-material/PushPin'
 import MoreVertIcon from '@mui/icons-material/MoreVert'
 import AddCircleIcon from '@mui/icons-material/AddCircle'
 
-export default function NoteCard({ note, updateLabels, allLabels, deleteNote, togglePin }) {
+import CardMenu from './CardMenu'
+import CardLabelMenu from './CardLabelMenu'
+
+import { removeLabel } from '../reducers/noteReducer'
+import { useDispatch, useSelector } from 'react-redux'
+
+export default function NoteCard({ note }) {
+  const dispatch = useDispatch()
+  const labels = useSelector(state => state.labels)
 
   //Menu Popup
   const [anchorEl, setAnchorEl] = useState(null)
-  const [cardMenuLoading, setCardMenuLoading] = useState(false)
-  const open = Boolean(anchorEl)
   
   //Handle Opening the Card Menu
   const handleMenuClick = (event) => {
     setAnchorEl(event.currentTarget)
   }
 
-  //Handle Closing the Card Menu
-  const handleMenuClose = () => {
-    setAnchorEl(null)
-  }
-
   //Label Menu Popup
   const [anchorLabelEl, setAnchorLabelEl] = useState(null)
-  const [labelMenuLoading, setLabelMenuLoading] = useState(false)
-  const labelMenuOpen = Boolean(anchorLabelEl)
-  
 
   //Handle Opening the Card Label Menu
   const handleLabelMenuClick = (event) => {
     setAnchorLabelEl(event.currentTarget)
   }
 
-  //Handle Closing the Card Label Menu
-  const handleLabelMenuClose = () => {
-    setAnchorLabelEl(null)
-  }
-
-  //Handle deleting note
-  const handleDelete = async () => {
-    setCardMenuLoading(true)
-
-    try {
-      await deleteNote(note.id)
-    } catch (error) {
-      console.log(error)
-    } finally {
-      setCardMenuLoading(false)
-    }
-  }
-
-  const handlePin = async () => {
-    setCardMenuLoading(true)
-
-    try {
-      await togglePin(note)
-    } catch (error) {
-      console.log(error)
-    } finally {
-      setCardMenuLoading(false)
-    }
-  }
-
-  //Handle Changind the cards labels
-  const handleLabelChange = async (event, label) => {
-    const checked = event.target.checked
-    setLabelMenuLoading(true)
-
-    try {
-      if (checked) {
-        const newLabels = [...note.labels, label]
-        await updateLabels(note, newLabels)
-      } else {
-        const newLabels = note.labels.filter((l) => l !== label)
-        await updateLabels(note, newLabels)
-      }
-    } catch (error) {
-      console.log(error)
-    } finally {
-      setLabelMenuLoading(false)
-    }
-  }
-
   //Handle Deleting a Card's label
   const handleLabelDelete = (label) => {
-    const newLabels = note.labels.filter(l => l != label)
-    updateLabels(note, newLabels)
+    dispatch(removeLabel(note.id, label))
   }
+
+  const getContrastText = (color) => {
+    // Remove the '#' symbol from the hex color code
+    const hex = color.replace('#', '')
   
-  const labelCheckBoxes = allLabels.map(label => {
-    const checked = note.labels.some(noteLabel => noteLabel === label.id)
-    return (
-      <FormControlLabel
-        key={label.name}
-        control={<Checkbox checked={checked} />}
-        label={label.name}
-        onChange={event => handleLabelChange(event, label.id)}
-      />
-    )
-  })
+    // Convert the hex color code to its numeric representation
+    const numericColor = parseInt(hex, 16)
+  
+    // Calculate the brightness of the color
+    const brightness = (numericColor >> 16) + (numericColor >> 8 & 0xff) + (numericColor & 0xff)
+  
+    // Use black text color if brightness is greater than a threshold, otherwise use white
+    return brightness > 400 ? '#000000' : '#ffffff'
+  }
+
+  const getContrastChip = (color) => {
+    // Remove the '#' symbol from the hex color code
+    const hex = color.replace('#', '')
+  
+    // Convert the hex color code to its numeric representation
+    const numericColor = parseInt(hex, 16)
+  
+    // Calculate the brightness of the color
+    const brightness = (numericColor >> 16) + (numericColor >> 8 & 0xff) + (numericColor & 0xff)
+  
+    // Use black text color if brightness is greater than a threshold, otherwise use white
+    return brightness > 400 ? darken(color, 0.08) : darken('#ffffff', 0.02)
+  }
 
   return (
     <div>
-      <Card elevation={1} >
+      <Card 
+        elevation={1} 
+        sx={{ backgroundColor: note.backgroundColor }}
+      >
         <CardHeader
           //CARD MENU
           action={
@@ -133,6 +88,7 @@ export default function NoteCard({ note, updateLabels, allLabels, deleteNote, to
               <Tooltip title="More">
                 <IconButton
                   onClick={handleMenuClick}
+                  sx={{ color: getContrastText(note.backgroundColor) }}
                 >
                   <MoreVertIcon />
                 </IconButton>
@@ -140,12 +96,23 @@ export default function NoteCard({ note, updateLabels, allLabels, deleteNote, to
             </div>
           }
           title={note.title}
-          sx={{ wordBreak: 'break-word' }}
-          
+          sx={{ 
+            wordBreak: 'break-word', 
+            whiteSpace: 'pre-line',
+            color: getContrastText(note.backgroundColor) 
+          }}          
         />
 
         <CardContent>
-          <Typography variant="body2" color="textSecondary" sx={{ wordBreak: 'break-word' }} > 
+          <Typography 
+            variant="body2" 
+            color="textSecondary" 
+            sx={{ 
+              wordBreak: 'break-word',
+              whiteSpace: 'pre-line',
+              color: getContrastText(note.backgroundColor)
+            }} 
+          > 
             { note.details }
           </Typography>
         </CardContent>
@@ -153,13 +120,16 @@ export default function NoteCard({ note, updateLabels, allLabels, deleteNote, to
         <CardActions>
           <div>
             {note.labels.map(label => {
-              const labelObj = allLabels.find(l => l.id == label)
+              const labelObj = labels.find(l => l.id == label)
               return(
                 <Chip 
                   key={label} 
                   label={labelObj ? labelObj.name : ''} 
                   onDelete={() => handleLabelDelete(label)} 
-                  sx={{ marginRight: '5px' }} 
+                  sx={{ 
+                    marginRight: '5px',
+                    backgroundColor: getContrastChip(note.backgroundColor)
+                  }} 
                 />
               ) 
             })}
@@ -174,48 +144,19 @@ export default function NoteCard({ note, updateLabels, allLabels, deleteNote, to
         </CardActions>
       </Card>
 
+
+      <CardMenu 
+        note={note} 
+        anchorEl={anchorEl} 
+        setAnchorEl={setAnchorEl} 
+      />
+
+      <CardLabelMenu 
+        note={note} 
+        anchorLabelEl={anchorLabelEl} 
+        setAnchorLabelEl={setAnchorLabelEl} 
+      />
       
-
-      {/* CARD OPTIONS MENU */}
-      <Menu
-        anchorEl={anchorEl}
-        open={open}
-        onClose={handleMenuClose}
-      >
-        <MenuItem key={'Delete'}  onClick={handleDelete}>
-          <DeleteOutlined />
-          Delete
-        </MenuItem>
-        <MenuItem key={'Pin'}  onClick={handlePin}>
-          {note.pinned ? <PushPinIcon /> : <PushPinOutlinedIcon />}
-          {note.pinned ? 'Unpin' : 'Pin'}
-        </MenuItem>
-        {
-          cardMenuLoading ?
-            <LinearProgress sx={{ position: 'absolute', bottom: 0, left: 0, width: '100%' }}/>
-            : 
-            ''
-        }
-      </Menu>
-
-      {/* LABEL MENU */}
-      <Menu
-        anchorEl={anchorLabelEl}
-        open={labelMenuOpen}
-        onClose={handleLabelMenuClose}
-      >
-        <Container>
-          <FormGroup>
-            {labelCheckBoxes}
-          </FormGroup>
-        </Container>
-        {
-          labelMenuLoading ?
-            <LinearProgress sx={{ position: 'absolute', bottom: 0, left: 0, width: '100%' }}/>
-            : 
-            ''
-        }
-      </Menu>
       
     </div>
   )

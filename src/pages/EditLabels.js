@@ -1,6 +1,4 @@
 /* eslint-disable react/prop-types */
-import labelService from '../services/labels'
-
 import React, { useState, useEffect } from 'react'
 import Typography from '@mui/material/Typography'
 import Container from '@mui/material/Container'
@@ -11,11 +9,15 @@ import Tooltip from '@mui/material/Tooltip'
 import IconButton from '@mui/material/IconButton'
 import DeleteOutlined from '@mui/icons-material/DeleteOutlined'
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight'
-import Snackbar from '@mui/material/Snackbar'
-import CloseIcon from '@mui/icons-material/Close'
 import CircularProgress from '@mui/material/CircularProgress'
 
-export default function EditLabels({ allLabels, setAllLabels }) {
+import { useDispatch, useSelector } from 'react-redux'
+import { createLabel, deleteLabel, updateLabel } from '../reducers/labelReducer'
+import { removeLabelFromAll } from '../reducers/noteReducer'
+
+export default function EditLabels() {
+  const dispatch = useDispatch()
+
   const [newLabel, setNewLabel] = useState('')
   const [newLabelError, setNewLabelError] = useState(false)
   const [labelNameHelperText, setLabelNameHelperText] = useState('')
@@ -25,9 +27,7 @@ export default function EditLabels({ allLabels, setAllLabels }) {
   const [allHelperTexts, setAllHelperTexts] = useState([])
   const [allLoading, setAllLoading] = useState([])
 
-  const [snackBarMsg, setSnackBarMsg] = useState('')
-  const [snackBarOpen, setSnackBarOpen] = useState(false)
-  
+  const allLabels = useSelector(state => state.labels)
 
   //Set up error, helper text and loading animation states for labels to be edited
   useEffect(() => {
@@ -75,21 +75,8 @@ export default function EditLabels({ allLabels, setAllLabels }) {
     setAllLoading(animations)
   } 
 
-  //Handle closing of the snackbar
-  const handleSnackClose = (event, reason) => {
-    if (reason === 'clickaway') {
-      return
-    }
-    setSnackBarOpen(false)
-  }
-
-  const showSnackBar = (message) => {
-    setSnackBarMsg(message)
-    setSnackBarOpen(true)
-  }
-
   //Submit event for creating a new label
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
     setNewLabelError(false)
     setLabelNameHelperText('')
@@ -106,47 +93,31 @@ export default function EditLabels({ allLabels, setAllLabels }) {
     }
 
     if (newLabel !== '' && !labelAlreadyExists) {
-      const newLabelObj = { 'name': newLabel }
-      setNewLabelLoading(true)
-
-      labelService
-        .create(newLabelObj)
-        .then((returnedLabel) => {
-          console.log(returnedLabel)
-          const newLabels = [...allLabels, returnedLabel]
-          setAllLabels(newLabels)
-          setNewLabel('')
-          showSnackBar('Successfully created label!')
-          setNewLabelLoading(false)
-        })
-        .catch(error => {
-          //Error Alert
-          console.log(error)
-          showSnackBar('Failed to create label.')
-          setNewLabelLoading(false)
-        })
+      try {
+        setNewLabelLoading(true)
+        await dispatch(createLabel(newLabel))
+        setNewLabel('')
+        setNewLabelLoading(false)
+      } 
+      catch (error) {
+        console.log(error)
+        setNewLabelLoading(false)
+      }
     } 
   }
 
   //Delete label
-  const handleDelete = (e, label) => {
-    changeLoadState(label, true)
-
-    labelService
-      .remove(label.id)
-      .then(() => {
-        const newLabels = allLabels.filter(l => l.id != label.id)
-        setAllLabels(newLabels)
-        setSnackBarOpen(true)
-        setSnackBarMsg('Successfully deleted label!')
-        changeLoadState(label, false)
-      })
-      .catch(error => {
-        console.log(error)
-        showSnackBar('Failed to delete label.')
-        changeLoadState(label, false)
-      })
-      //Handle Removing the deleted label from notes at server-side
+  const handleDelete = async (e, label) => {
+    try {
+      changeLoadState(label, true)
+      await dispatch(deleteLabel(label.id))
+      await dispatch(removeLabelFromAll(label.id))
+      changeLoadState(label, false)
+    } 
+    catch (error) {
+      console.log(error)
+      changeLoadState(label, false)
+    }
   }
 
   //Event handler for editing a label
@@ -201,42 +172,21 @@ export default function EditLabels({ allLabels, setAllLabels }) {
     }
   }
 
-  const handleBlur = (newText, label) => {
+  const handleBlur = async (newText, label) => {
     const labelAlreadyExists = allLabels.some(l => l.name === newText) && newText != label.name
 
     if(newText != '' && !labelAlreadyExists) {
-      const editedLabel = {...label, name: newText}
-      changeLoadState(label, true)
-
-      labelService
-        .update(label.id, editedLabel)
-        .then(() => {
-          showSnackBar('Successfully edited label!')
-          // Update state with label
-          let newLabels = allLabels.map((l) => (l.id === label.id ? editedLabel : l))
-          setAllLabels(newLabels)
-          changeLoadState(label, false)
-        })
-        .catch(error => {
-          // Error Alert
-          console.error(error)
-          showSnackBar('Failed to edit label.')
-          changeLoadState(label, false)
-        })
+      try {
+        changeLoadState(label, true)
+        await dispatch(updateLabel(label.id, newText))
+        changeLoadState(label, false)
+      } 
+      catch (error) {
+        console.error(error)
+        changeLoadState(label, false)
+      }
     }
   }
-
-  // Action for Snackbar
-  const action = (
-    <IconButton
-      size="small"
-      aria-label="close"
-      color="inherit"
-      onClick={handleSnackClose}
-    >
-      <CloseIcon fontSize="small" />
-    </IconButton>
-  )
 
   return (
     <Container size="sm">
@@ -319,24 +269,14 @@ export default function EditLabels({ allLabels, setAllLabels }) {
                 helperText={helperText ? helperText.text : ''}
                 margin="normal"
               />
-              {loading ?
-                loading.bool ? <CircularProgress color="secondary" size={25} /> : ''
-                :
-                ''
+              {loading &&
+                loading.bool && <CircularProgress color="secondary" size={25} />
               }
             </Box>
           )
           
         })
       }
-
-      <Snackbar
-        open={snackBarOpen} 
-        autoHideDuration={6000} 
-        onClose={handleSnackClose}
-        message={snackBarMsg}
-        action={action}
-      />
 
     </Container>
   )

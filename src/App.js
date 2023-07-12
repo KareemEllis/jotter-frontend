@@ -1,20 +1,55 @@
 import React, { useEffect, useState } from 'react'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
-import Notes from './pages/Notes'
-import labelService from './services/labels'
-import Create from './pages/Create'
-import Layout from './components/Layout'
-import EditLabels from './pages/EditLabels'
 import Snackbar from '@mui/material/Snackbar'
 import IconButton from '@mui/material/IconButton'
 import CloseIcon from '@mui/icons-material/Close'
 
+import Layout from './components/Layout'
+import Notes from './pages/Notes'
+import Create from './pages/Create'
+import EditNote from './pages/EditNote'
+import Login from './pages/Login'
+import EditLabels from './pages/EditLabels'
+import Register from './pages/Register'
+
+import { initializeUser } from './reducers/userReducer'
+import { initializeLabels } from './reducers/labelReducer'
+import { initializeNotes } from './reducers/noteReducer'
+import { useDispatch, useSelector } from 'react-redux'
+
 function App() {
-  const [allLabels, setAllLabels] = useState([])
+  const labels = useSelector(state => state.labels)
+  const user = useSelector(state => state.user)
+  const [userLoaded, setUserLoaded] = useState(false)
+  let isInitialized = user ? true : false
 
   const [snackBarMsg, setSnackBarMsg] = useState('')
   const [snackBarOpen, setSnackBarOpen] = useState(false)
 
+  const dispatch = useDispatch()
+
+  useEffect(() => { 
+    const initializeData = async () => {
+      if(!isInitialized) {
+        isInitialized = true
+        await dispatch(initializeUser())
+        setUserLoaded(true)
+      }
+      
+      if(user) {
+        dispatch(initializeLabels())
+        dispatch(initializeNotes())
+      }
+    }
+
+    initializeData()
+  }, [user])
+
+  const showSnackBar = (message) => {
+    setSnackBarMsg(message)
+    setSnackBarOpen(true)
+  }
+  
   const handleSnackClose = (event, reason) => {
     if (reason === 'clickaway') {
       return
@@ -33,48 +68,71 @@ function App() {
     </IconButton>
   )
 
-  useEffect(() => { 
-    // Fatch Labels
-    labelService
-      .getAll()
-      .then(data => setAllLabels(data))
-      .catch(error => {
-        console.log(error)
-        setSnackBarOpen(true)
-        setSnackBarMsg('Network Error')
-      })
-  }, [])
-
   return (
     <Router>
-      <Layout labels={allLabels}>
-        <Routes>
-          <Route 
-            path="/" 
-            element={<Notes allLabels={allLabels} labelToView="" />} 
-          />
-          <Route 
-            path="/create" 
-            element={<Create />} 
-          />
-          <Route 
-            path="/labels" 
-            element={<EditLabels allLabels={allLabels} setAllLabels={setAllLabels} />} 
-          />
-          {
-            //ROUTES FOR LABELS
-            allLabels.map(label => {
-              return(
-                <Route 
-                  key={label.id}
-                  path={`/label/${label.id}`} 
-                  element={<Notes allLabels={allLabels} labelToView={label} />} 
-                />
-              )
-            })
+      <Routes>
+
+        <Route 
+          path='/login'
+          element={<Login />}
+        />
+
+        <Route 
+          path='/register'
+          element={<Register />}
+        />
+
+        <Route 
+          path="/" 
+          element={
+            <Layout userLoaded={userLoaded}>
+              <Notes labelToView="" />
+            </Layout>
+          } 
+        />
+
+        <Route 
+          path='/create' 
+          element={
+            <Layout userLoaded={userLoaded}>
+              <Create />
+            </Layout>
+          } 
+        />
+
+        <Route 
+          path='/note/:noteId'
+          element={
+            <Layout userLoaded={userLoaded}>
+              <EditNote />
+            </Layout>
           }
-        </Routes>
-      </Layout>
+        />
+
+        <Route 
+          path="/labels" 
+          element={
+            <Layout userLoaded={userLoaded}>
+              <EditLabels />
+            </Layout>
+          } 
+        />
+
+        {
+          //ROUTES FOR LABELS
+          labels.map(label => (
+            <Route 
+              key={label.id}
+              path={`/label/${label.id}`} 
+              element={
+                <Layout userLoaded={userLoaded}>
+                  <Notes labelToView={label} />
+                </Layout>
+              } 
+            />
+          ))
+        }
+      </Routes>
 
       <Snackbar
         open={snackBarOpen} 

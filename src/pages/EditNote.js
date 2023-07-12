@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Typography from '@mui/material/Typography'
 import Button from '@mui/material/Button'
 import Container from '@mui/material/Container'
@@ -13,11 +13,14 @@ import ToggleButton from '@mui/material/ToggleButton'
 import CircularProgress from '@mui/material/CircularProgress'
 import ColorPicker from '../components/ColorPicker'
 
-import { useNavigate } from 'react-router-dom'
-import { createNote } from '../reducers/noteReducer'
+import { useNavigate, useParams } from 'react-router-dom'
+import { updateNote } from '../reducers/noteReducer'
 import { useDispatch, useSelector } from 'react-redux'
 
 export default function Create() {
+  const { noteId } = useParams()
+  const note = useSelector(state => state.notes.find(n => n.id == noteId))
+
   const dispatch = useDispatch()
   const navigate = useNavigate()
   const allLabels = useSelector(state => state.labels)
@@ -38,8 +41,19 @@ export default function Create() {
   const [anchorEl, setAnchorEl] = useState(null)
   //Handle Opening the Card Menu
   const handleMenuClick = (event) => {
+    console.log('Should display Color Picker')
     setAnchorEl(event.currentTarget)
   }
+
+  useEffect(() => {
+    if(note) {
+      setPinned(note.pinned)
+      setTitle(note.title)
+      setDetails(note.details)
+      setLabels(note.labels)
+      setBgColor(note.backgroundColor)
+    }
+  }, [note])
 
   const handleColorChange = (newColor) => {
     setBgColor(newColor)
@@ -89,7 +103,7 @@ export default function Create() {
     if (title && details) {
       setLoading(true)
       try {
-        await dispatch(createNote(title, details, labels, pinned, bgColor))
+        await dispatch(updateNote(note.id, title, details, labels, pinned, bgColor))
         setLoading(false)
         navigate('/')
       } 
@@ -100,16 +114,17 @@ export default function Create() {
     } 
   }
 
-  const labelCheckBoxes = allLabels.map(label => (
-    <div key={label.name}>
+  const labelCheckBoxes = allLabels.map(label => {
+    const checked = labels.some(l => l == label.id)
+    return <div key={label.name}>
       <FormControlLabel
-        control={<Checkbox />}
+        control={<Checkbox checked={checked} />}
+        value={checked}
         label={label.name}
         onChange={event => handleLabelChange(event, label)}
-        
       />
     </div>
-  ))
+  })
 
   return (
     <Container size="sm">
@@ -123,14 +138,16 @@ export default function Create() {
       </Typography>
       
       <form noValidate autoComplete="off" onSubmit={handleSubmit}>
+        {/* //Pin Control */}
         <ToggleButton
-          value="check"
+          value={pinned}
           selected={pinned}
           onChange={() => setPinned(prev => !prev)}
         >
           { pinned ? <PushPinIcon /> : <PushPinOutlinedIcon /> }
         </ToggleButton>
 
+        {/* //Color Control */}
         <div>
           <Button 
             onClick={handleMenuClick}
@@ -148,9 +165,11 @@ export default function Create() {
           </Button>
         </div>
 
+        {/* //Title Control */}
         <div style={{ maxWidth: 600 }}>
           <TextField
             onChange={(e) => setTitle(e.target.value)}
+            value={title}
             label="Note Title" 
             variant="outlined" 
             color="secondary" 
@@ -162,9 +181,11 @@ export default function Create() {
             margin="normal"
           />
         </div>
+        {/* //Details Control */}
         <div style={{ maxWidth: 900 }}>
           <TextField
             onChange={(e) => setDetails(e.target.value)}
+            value={details}
             label="Details"
             variant="outlined"
             color="secondary"

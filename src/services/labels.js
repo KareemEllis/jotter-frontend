@@ -1,12 +1,18 @@
 import axios from 'axios'
+import { getConfig } from '../config'
 
 const baseUrl = '/api/labels'
 
 const getAll = async () => {
   try {
-    const response = await axios.get(baseUrl)
+    const config = {
+      headers: { Authorization: getConfig().jwt }
+    }
+
+    const response = await axios.get(baseUrl, config)
     return response.data
-  } catch (error) {
+  } 
+  catch (error) {
     console.log(error)
     throw new Error(error.message)
   }
@@ -14,9 +20,14 @@ const getAll = async () => {
 
 const create = async (newLabel) => {
   try {
-    const response = await axios.post(baseUrl, newLabel)
+    const config = {
+      headers: { Authorization: getConfig().jwt }
+    }
+
+    const response = await axios.post(baseUrl, newLabel, config)
     return response.data
-  } catch (error) {
+  } 
+  catch (error) {
     console.log(error)
     throw new Error(error.message)
   }
@@ -24,9 +35,14 @@ const create = async (newLabel) => {
   
 const remove = async (id) => {
   try {
-    const response = await axios.delete(`${baseUrl}/${id}`)
+    const config = {
+      headers: { Authorization: getConfig().jwt }
+    }
+
+    const response = await axios.delete(`${baseUrl}/${id}`, config)
     return response.data
-  } catch (error) {
+  } 
+  catch (error) {
     console.log(error)
     throw new Error(error.message)
   }
@@ -34,9 +50,14 @@ const remove = async (id) => {
   
 const update = async (id, updatedLabel) => {
   try {
-    const response = await axios.patch(`${baseUrl}/${id}`, updatedLabel)
+    const config = {
+      headers: { Authorization: getConfig().jwt }
+    }
+
+    const response = await axios.patch(`${baseUrl}/${id}`, updatedLabel, config)
     return response.data
-  } catch (error) {
+  } 
+  catch (error) {
     console.log(error)
     throw new Error(error.message)
   }

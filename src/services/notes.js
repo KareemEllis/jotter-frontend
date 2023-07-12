@@ -1,12 +1,18 @@
 import axios from 'axios'
+import { getConfig } from '../config'
 
 const baseUrl = '/api/notes'
 
 const getAll = async () => {
   try {
-    const response = await axios.get(baseUrl)
+    const config = {
+      headers: { Authorization: getConfig().jwt }
+    }
+    
+    const response = await axios.get(baseUrl, config)
     return response.data
-  } catch (error) {
+  } 
+  catch (error) {
     console.log(error)
     throw new Error(error.message)
   }
@@ -14,9 +20,14 @@ const getAll = async () => {
 
 const get = async (id) => {
   try {
-    const response = await axios.get(`${baseUrl}/${id}`)
+    const config = {
+      headers: { Authorization: getConfig().jwt }
+    }
+
+    const response = await axios.get(`${baseUrl}/${id}`, config)
     return response.data
-  } catch (error) {
+  } 
+  catch (error) {
     console.log(error)
     throw new Error(error.message)
   }
@@ -24,9 +35,14 @@ const get = async (id) => {
 
 const create = async (newNote) => {
   try {
-    const response = await axios.post(baseUrl, newNote)
+    const config = {
+      headers: { Authorization: getConfig().jwt }
+    }
+
+    const response = await axios.post(baseUrl, newNote, config)
     return response.data
-  } catch (error) {
+  } 
+  catch (error) {
     console.log(error)
     throw new Error(error.message)
   }
@@ -34,9 +50,14 @@ const create = async (newNote) => {
 
 const remove = async (id) => {
   try {
-    const response = await axios.delete(`${baseUrl}/${id}`)
+    const config = {
+      headers: { Authorization: getConfig().jwt }
+    }
+
+    const response = await axios.delete(`${baseUrl}/${id}`, config)
     return response.data
-  } catch (error) {
+  } 
+  catch (error) {
     console.log(error)
     throw new Error(error.message)
   }
@@ -44,9 +65,14 @@ const remove = async (id) => {
 
 const update = async (id, updatedNote) => {
   try {
-    const response = await axios.patch(`${baseUrl}/${id}`, updatedNote)
+    const config = {
+      headers: { Authorization: getConfig().jwt }
+    }
+
+    const response = await axios.patch(`${baseUrl}/${id}`, updatedNote, config)
     return response.data
-  } catch (error) {
+  } 
+  catch (error) {
     console.log(error)
     throw new Error(error.message)
   }

@@ -15,56 +15,72 @@ import MenuIcon from '@mui/icons-material/Menu'
 import Toolbar from '@mui/material/Toolbar'
 import Typography from '@mui/material/Typography'
 import { AddCircleOutlineOutlined, SubjectOutlined } from '@mui/icons-material/'
+import LogoutOutlinedIcon from '@mui/icons-material/LogoutOutlined'
 import LabelIcon from '@mui/icons-material/Label'
 import EditIcon from '@mui/icons-material/Edit'
 import AppBar from '@mui/material/AppBar'
 
-export default function Layout({ children, labels }) {
+import userService from '../services/users'
+import { useDispatch, useSelector } from 'react-redux'
+import { logoutUser } from '../reducers/userReducer'
+import { getConfig } from '../config'
+
+export default function Layout({ children, userLoaded }) {
   const drawerWidth = 240
   const navigate = useNavigate()
   const location = useLocation()
+  const dispatch = useDispatch()
   const activeStyle = {
     background: '#f4f4f4'
   }
+  const user = useSelector(state => state.user)
+  
+  useEffect(() => {
+    if(!user && userLoaded) {
+      navigate('/login')
+    }
+  }, [user])
 
-  const [menuItems, setMenuItems] = useState([])
   const [mobileOpen, setMobileOpen] = useState(false)
+
+  const labels = useSelector(state => state.labels)
+
+  const items = [
+    { 
+      id: 'My Notes',
+      text: 'My Notes', 
+      icon: <SubjectOutlined color="secondary" />, 
+      path: '/' 
+    },
+    { 
+      id: 'Create Note', 
+      text: 'Create Note', 
+      icon: <AddCircleOutlineOutlined color="secondary" />, 
+      path: '/create' 
+    },
+    { 
+      id: 'Edit Labels', 
+      text: 'Edit Labels', 
+      icon: <EditIcon color="secondary" />, 
+      path: '/labels' 
+    }
+  ]
+  const labelMenuItems = labels.map(label => ({
+    id: label.id,
+    text: label.name,
+    icon: <LabelIcon color="secondary" />,
+    path: `/label/${label.id}`
+  }))
+  const menuItems = [...items, ...labelMenuItems]
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen)
   }
 
-  useEffect(() => {
-    const items = [
-      { 
-        id: 'My Notes',
-        text: 'My Notes', 
-        icon: <SubjectOutlined color="secondary" />, 
-        path: '/' 
-      },
-      { 
-        id: 'Create Note', 
-        text: 'Create Note', 
-        icon: <AddCircleOutlineOutlined color="secondary" />, 
-        path: '/create' 
-      },
-      { 
-        id: 'Edit Labels', 
-        text: 'Edit Labels', 
-        icon: <EditIcon color="secondary" />, 
-        path: '/labels' 
-      }
-    ]
-
-    const labelMenuItems = labels.map(label => ({
-      id: label.id,
-      text: label.name,
-      icon: <LabelIcon color="secondary" />,
-      path: `/label/${label.id}`
-    }))
-  
-    setMenuItems([...items, ...labelMenuItems])
-  }, [labels])
+  const handleLogout = async () => {
+    await dispatch(logoutUser())
+    navigate('/login')
+  }
 
   const drawer = (
     <div>
@@ -84,6 +100,19 @@ export default function Layout({ children, labels }) {
             </ListItemButton>
           </ListItem>
         ))}
+
+        <ListItem 
+          key='Logout' 
+          disablePadding
+          onClick={() => handleLogout()}
+        >
+          <ListItemButton>
+            <ListItemIcon>
+              <LogoutOutlinedIcon color="secondary" />
+            </ListItemIcon>
+            <ListItemText primary={'Logout'} />
+          </ListItemButton>
+        </ListItem>
       </List>
     </div>
   )
@@ -127,7 +156,7 @@ export default function Layout({ children, labels }) {
           open={mobileOpen}
           onClose={handleDrawerToggle}
           ModalProps={{
-            keepMounted: true, // Better open performance on mobile.
+            keepMounted: true, 
           }}
           sx={{
             display: { xs: 'block', sm: 'none' },
