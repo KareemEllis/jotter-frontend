@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import Snackbar from '@mui/material/Snackbar'
 import IconButton from '@mui/material/IconButton'
 import CloseIcon from '@mui/icons-material/Close'
+import SnackNotification from './components/SnackNotification' 
 
 import Layout from './components/Layout'
 import Notes from './pages/Notes'
@@ -134,13 +135,7 @@ function App() {
         }
       </Routes>
 
-      <Snackbar
-        open={snackBarOpen} 
-        autoHideDuration={6000} 
-        onClose={handleSnackClose}
-        message={snackBarMsg}
-        action={action}
-      />
+      <SnackNotification />
     </Router>
   )
 }

@@ -9,6 +9,7 @@ import EditOutlinedIcon from '@mui/icons-material/EditOutlined'
 import LinearProgress from '@mui/material/LinearProgress'
 
 import { deleteNote, togglePin } from '../reducers/noteReducer'
+import { openSnackBar } from '../reducers/snackBarReducer'
 import { useNavigate } from 'react-router-dom'
 import { useDispatch } from 'react-redux'
 
@@ -32,6 +33,7 @@ export default function CardMenu({ note, anchorEl, setAnchorEl }) {
       await dispatch(deleteNote(note.id))
     } catch (error) {
       console.log(error)
+      dispatch(openSnackBar('Failed to delete note.'))
     } finally {
       setCardMenuLoading(false)
     }
@@ -44,6 +46,7 @@ export default function CardMenu({ note, anchorEl, setAnchorEl }) {
       await dispatch(togglePin(note.id))
     } catch (error) {
       console.log(error)
+      dispatch(openSnackBar('Failed to change pin.'))
     } finally {
       setCardMenuLoading(false)
     }

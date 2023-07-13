@@ -11,6 +11,7 @@ import CircularProgress from '@mui/material/CircularProgress'
 import Typography from '@mui/material/Typography'
 import Container from '@mui/material/Container'
 
+import { openSnackBar } from '../reducers/snackBarReducer'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { loginUser } from '../reducers/userReducer'
@@ -74,6 +75,7 @@ export default function Login() {
       } 
       catch (error) {
         setLoading(false)
+        dispatch(openSnackBar('Failed to log in.'))
         console.log(error)
         if(error.message == 401) {
           setAlertActive(true)

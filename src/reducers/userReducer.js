@@ -1,5 +1,4 @@
 import { createSlice } from '@reduxjs/toolkit'
-import { setJwt, setUser } from '../config'
 
 import userService from '../services/users'
 

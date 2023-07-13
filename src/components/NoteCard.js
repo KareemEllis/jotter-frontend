@@ -19,11 +19,14 @@ import AddCircleIcon from '@mui/icons-material/AddCircle'
 import CardMenu from './CardMenu'
 import CardLabelMenu from './CardLabelMenu'
 
+import { useNavigate } from 'react-router-dom'
+import { openSnackBar } from '../reducers/snackBarReducer'
 import { removeLabel } from '../reducers/noteReducer'
 import { useDispatch, useSelector } from 'react-redux'
 
 export default function NoteCard({ note }) {
   const dispatch = useDispatch()
+  const navigate = useNavigate()
   const labels = useSelector(state => state.labels)
 
   //Menu Popup
@@ -44,7 +47,12 @@ export default function NoteCard({ note }) {
 
   //Handle Deleting a Card's label
   const handleLabelDelete = (label) => {
-    dispatch(removeLabel(note.id, label))
+    try {
+      dispatch(removeLabel(note.id, label))
+    } catch (error) {
+      console.log(error)
+      dispatch(openSnackBar('Failed to remove label.'))
+    }
   }
 
   const getContrastText = (color) => {
@@ -127,10 +135,14 @@ export default function NoteCard({ note }) {
                 <Chip 
                   key={label} 
                   label={labelObj ? labelObj.name : ''} 
+                  onClick={() => navigate(`/label/${label}`)}
                   onDelete={() => handleLabelDelete(label)} 
                   sx={{ 
                     marginRight: '5px',
-                    backgroundColor: getContrastChip(note.backgroundColor)
+                    backgroundColor: getContrastChip(note.backgroundColor),
+                    ':hover': {
+                      backgroundColor: darken(getContrastChip(note.backgroundColor), 0.1),
+                    },
                   }} 
                 />
               ) 

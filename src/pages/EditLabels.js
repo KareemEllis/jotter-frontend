@@ -11,6 +11,7 @@ import DeleteOutlined from '@mui/icons-material/DeleteOutlined'
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight'
 import CircularProgress from '@mui/material/CircularProgress'
 
+import { openSnackBar } from '../reducers/snackBarReducer'
 import { useDispatch, useSelector } from 'react-redux'
 import { createLabel, deleteLabel, updateLabel } from '../reducers/labelReducer'
 import { removeLabelFromAll } from '../reducers/noteReducer'
@@ -102,6 +103,7 @@ export default function EditLabels() {
       catch (error) {
         console.log(error)
         setNewLabelLoading(false)
+        dispatch(openSnackBar('Failed to create new label.'))
       }
     } 
   }
@@ -117,6 +119,7 @@ export default function EditLabels() {
     catch (error) {
       console.log(error)
       changeLoadState(label, false)
+      dispatch(openSnackBar('Failed to delete label.'))
     }
   }
 
@@ -184,6 +187,7 @@ export default function EditLabels() {
       catch (error) {
         console.error(error)
         changeLoadState(label, false)
+        dispatch(openSnackBar('Failed to edit label.'))
       }
     }
   }

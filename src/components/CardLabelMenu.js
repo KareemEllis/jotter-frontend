@@ -8,6 +8,7 @@ import FormGroup from '@mui/material/FormGroup'
 import Checkbox from '@mui/material/Checkbox'
 
 import { addLabel, removeLabel } from '../reducers/noteReducer'
+import { openSnackBar } from '../reducers/snackBarReducer'
 import { useDispatch, useSelector } from 'react-redux'
 
 export default function CardLabelMenu({ note, anchorLabelEl, setAnchorLabelEl }) {
@@ -35,6 +36,7 @@ export default function CardLabelMenu({ note, anchorLabelEl, setAnchorLabelEl })
       }
     } catch (error) {
       console.log(error)
+      dispatch(openSnackBar('Failed to edit labels.'))
     } finally {
       setLabelMenuLoading(false)
     }

@@ -14,6 +14,7 @@ import CircularProgress from '@mui/material/CircularProgress'
 import ColorPicker from '../components/ColorPicker'
 
 import { useNavigate, useParams } from 'react-router-dom'
+import { openSnackBar } from '../reducers/snackBarReducer'
 import { updateNote } from '../reducers/noteReducer'
 import { useDispatch, useSelector } from 'react-redux'
 
@@ -110,6 +111,7 @@ export default function Create() {
       catch (error) {
         console.log(error)
         setLoading(false)
+        dispatch(openSnackBar('Failed to edit note.'))
       }
     } 
   }

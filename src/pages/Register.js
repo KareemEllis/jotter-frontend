@@ -11,7 +11,8 @@ import CircularProgress from '@mui/material/CircularProgress'
 import Typography from '@mui/material/Typography'
 import Container from '@mui/material/Container'
 
-import { useSelector } from 'react-redux'
+import { openSnackBar } from '../reducers/snackBarReducer'
+import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import userService from '../services/users'
 
@@ -30,7 +31,7 @@ function Copyright(props) {
 
 export default function SignUp() {
   const navigate = useNavigate()
-
+  const dispatch = useDispatch()
   const user = useSelector(state => state.user)
   const [loading, setLoading] = useState(false)
 
@@ -112,6 +113,7 @@ export default function SignUp() {
         })
         .catch(error => {
           setLoading(false)
+          dispatch(openSnackBar('Failed to register.'))
           console.log(error)
           if (error.message == 'username not unique') {
             changeUsernameError('Username already exists.', true)
