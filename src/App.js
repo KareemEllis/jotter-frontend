@@ -24,9 +24,6 @@ function App() {
   const [userLoaded, setUserLoaded] = useState(false)
   let isInitialized = user ? true : false
 
-  const [snackBarMsg, setSnackBarMsg] = useState('')
-  const [snackBarOpen, setSnackBarOpen] = useState(false)
-
   const dispatch = useDispatch()
 
   useEffect(() => { 
@@ -45,29 +42,6 @@ function App() {
 
     initializeData()
   }, [user])
-
-  const showSnackBar = (message) => {
-    setSnackBarMsg(message)
-    setSnackBarOpen(true)
-  }
-  
-  const handleSnackClose = (event, reason) => {
-    if (reason === 'clickaway') {
-      return
-    }
-    setSnackBarOpen(false)
-  }
-
-  const action = (
-    <IconButton
-      size="small"
-      aria-label="close"
-      color="inherit"
-      onClick={handleSnackClose}
-    >
-      <CloseIcon fontSize="small" />
-    </IconButton>
-  )
 
   return (
     <Router>
