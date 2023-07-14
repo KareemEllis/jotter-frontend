@@ -141,7 +141,7 @@ export default function Layout({ children, userLoaded }) {
             <MenuIcon />
           </IconButton>
           <Typography variant="h6" noWrap component="div">
-            Note App
+            {user && user.name}
           </Typography>
         </Toolbar>
       </AppBar>
