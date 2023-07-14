@@ -1,4 +1,5 @@
 /* eslint-disable react/prop-types */
+/* global process */
 import React, { useEffect, useState } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import Box from '@mui/material/Box'
@@ -84,7 +85,9 @@ export default function Layout({ children, userLoaded }) {
 
   const drawer = (
     <div>
-      <Toolbar />
+      <Toolbar style={{ display: 'flex', justifyContent: 'center' }}>
+        <img style={{ width: '50%', alignSelf: 'center' }} src={`${process.env.PUBLIC_URL}/jotter-logo.png`} alt="Logo" />
+      </Toolbar>
       <Divider />
       <List>
         {menuItems.map((item) => (

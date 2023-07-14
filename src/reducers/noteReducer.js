@@ -34,6 +34,11 @@ export const initializeNotes = () => {
   }
 }
   
+export const setNewNotes = (notes) => {
+  return async dispatch => {
+    dispatch(setNotes(notes))
+  }
+}
 export const createNote = (title, details, labels, pinned, backgroundColor) => {
   const note = {
     title,
