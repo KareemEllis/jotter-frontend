@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-/* global process */
+import logo from '../jotter-logo.png'
 import React, { useEffect, useState } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import Box from '@mui/material/Box'
@@ -86,7 +86,7 @@ export default function Layout({ children, userLoaded }) {
   const drawer = (
     <div>
       <Toolbar style={{ display: 'flex', justifyContent: 'center' }}>
-        <img style={{ width: '50%', alignSelf: 'center' }} src={`${process.env.PUBLIC_URL}/jotter-logo.png`} alt="Logo" />
+        <img style={{ width: '50%', alignSelf: 'center' }} src={logo} alt="Logo" />
       </Toolbar>
       <Divider />
       <List>
