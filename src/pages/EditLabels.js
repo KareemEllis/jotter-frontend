@@ -219,7 +219,6 @@ export default function EditLabels() {
 
         <Button
           type="submit" 
-          color="secondary" 
           variant="contained"
           endIcon={ newLabelLoading ? <CircularProgress color="inherit" size={20} /> : <KeyboardArrowRightIcon />}
           margin="normal"
@@ -254,7 +253,7 @@ export default function EditLabels() {
               <Tooltip title="Delete Label">
                 <IconButton
                   onClick={(e) =>handleDelete(e, label)}
-                  color='secondary'
+                  color='error'
                 >
                   <DeleteOutlined />
                 </IconButton>

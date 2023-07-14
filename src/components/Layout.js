@@ -49,26 +49,26 @@ export default function Layout({ children, userLoaded }) {
     { 
       id: 'My Notes',
       text: 'My Notes', 
-      icon: <SubjectOutlined color="secondary" />, 
+      icon: <SubjectOutlined color='secondary'/>, 
       path: '/' 
     },
     { 
       id: 'Create Note', 
       text: 'Create Note', 
-      icon: <AddCircleOutlineOutlined color="secondary" />, 
+      icon: <AddCircleOutlineOutlined color='secondary'/>, 
       path: '/create' 
     },
     { 
       id: 'Edit Labels', 
       text: 'Edit Labels', 
-      icon: <EditIcon color="secondary" />, 
+      icon: <EditIcon color='secondary'/>, 
       path: '/labels' 
     }
   ]
   const labelMenuItems = labels.map(label => ({
     id: label.id,
     text: label.name,
-    icon: <LabelIcon color="secondary" />,
+    icon: <LabelIcon color='secondary'/>,
     path: `/label/${label.id}`
   }))
   const menuItems = [...items, ...labelMenuItems]
@@ -108,7 +108,7 @@ export default function Layout({ children, userLoaded }) {
         >
           <ListItemButton>
             <ListItemIcon>
-              <LogoutOutlinedIcon color="secondary" />
+              <LogoutOutlinedIcon color='error'/>
             </ListItemIcon>
             <ListItemText primary={'Logout'} />
           </ListItemButton>
@@ -126,7 +126,6 @@ export default function Layout({ children, userLoaded }) {
           width: { sm: `calc(100% - ${drawerWidth}px)` },
           ml: { sm: `${drawerWidth}px` },
         }}
-        color="secondary"
       >
         <Toolbar>
           <IconButton

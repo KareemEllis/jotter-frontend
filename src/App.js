@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
-import Snackbar from '@mui/material/Snackbar'
-import IconButton from '@mui/material/IconButton'
-import CloseIcon from '@mui/icons-material/Close'
+import theme from './theme'
+import { ThemeProvider } from '@mui/material/styles'
 import SnackNotification from './components/SnackNotification' 
 
 import Layout from './components/Layout'
@@ -44,73 +43,75 @@ function App() {
   }, [user])
 
   return (
-    <Router>
-      <Routes>
+    <ThemeProvider theme={theme}>
+      <Router>
+        <Routes>
 
-        <Route 
-          path='/login'
-          element={<Login />}
-        />
+          <Route 
+            path='/login'
+            element={<Login />}
+          />
 
-        <Route 
-          path='/register'
-          element={<Register />}
-        />
+          <Route 
+            path='/register'
+            element={<Register />}
+          />
 
-        <Route 
-          path="/" 
-          element={
-            <Layout userLoaded={userLoaded}>
-              <Notes labelToView="" />
-            </Layout>
-          } 
-        />
+          <Route 
+            path="/" 
+            element={
+              <Layout userLoaded={userLoaded}>
+                <Notes labelToView="" />
+              </Layout>
+            } 
+          />
 
-        <Route 
-          path='/create' 
-          element={
-            <Layout userLoaded={userLoaded}>
-              <Create />
-            </Layout>
-          } 
-        />
+          <Route 
+            path='/create' 
+            element={
+              <Layout userLoaded={userLoaded}>
+                <Create />
+              </Layout>
+            } 
+          />
 
-        <Route 
-          path='/note/:noteId'
-          element={
-            <Layout userLoaded={userLoaded}>
-              <EditNote />
-            </Layout>
+          <Route 
+            path='/note/:noteId'
+            element={
+              <Layout userLoaded={userLoaded}>
+                <EditNote />
+              </Layout>
+            }
+          />
+
+          <Route 
+            path="/labels" 
+            element={
+              <Layout userLoaded={userLoaded}>
+                <EditLabels />
+              </Layout>
+            } 
+          />
+
+          {
+            //ROUTES FOR LABELS
+            labels.map(label => (
+              <Route 
+                key={label.id}
+                path={`/label/${label.id}`} 
+                element={
+                  <Layout userLoaded={userLoaded}>
+                    <Notes labelToView={label} />
+                  </Layout>
+                } 
+              />
+            ))
           }
-        />
+        </Routes>
 
-        <Route 
-          path="/labels" 
-          element={
-            <Layout userLoaded={userLoaded}>
-              <EditLabels />
-            </Layout>
-          } 
-        />
-
-        {
-          //ROUTES FOR LABELS
-          labels.map(label => (
-            <Route 
-              key={label.id}
-              path={`/label/${label.id}`} 
-              element={
-                <Layout userLoaded={userLoaded}>
-                  <Notes labelToView={label} />
-                </Layout>
-              } 
-            />
-          ))
-        }
-      </Routes>
-
-      <SnackNotification />
-    </Router>
+        <SnackNotification />
+      </Router>
+    </ThemeProvider>
   )
 }
 

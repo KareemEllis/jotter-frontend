@@ -204,7 +204,6 @@ export default function Create() {
 
         <Button
           type="submit" 
-          color="secondary" 
           variant="contained"
           endIcon={ loading ? <CircularProgress color="inherit" size={20} /> : <KeyboardArrowRightIcon />}
           margin="normal"

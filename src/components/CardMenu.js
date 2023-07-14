@@ -62,19 +62,19 @@ export default function CardMenu({ note, anchorEl, setAnchorEl }) {
     >
       {/* //Pin Control */}
       <MenuItem onClick={handlePin}>
-        {note.pinned ? <PushPinIcon sx={rightMargin} /> : <PushPinOutlinedIcon sx={rightMargin} />}
+        {note.pinned ? <PushPinIcon sx={rightMargin} color='secondary'/> : <PushPinOutlinedIcon sx={rightMargin} color='secondary'/>}
         {note.pinned ? 'Unpin' : 'Pin'}
       </MenuItem>
 
       {/* //Edit Note */}
       <MenuItem onClick={() => navigate(`/note/${note.id}`)}>
-        <EditOutlinedIcon sx={rightMargin}/>
+        <EditOutlinedIcon sx={rightMargin} color='secondary'/>
         Edit Note
       </MenuItem>
 
       {/* //Delete */}
       <MenuItem onClick={handleDelete}>
-        <DeleteOutlined sx={rightMargin} />
+        <DeleteOutlined sx={rightMargin} color='secondary'/>
         Delete
       </MenuItem>
       
