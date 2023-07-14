@@ -60,8 +60,8 @@ export default function Layout({ children, userLoaded }) {
       path: '/create' 
     },
     { 
-      id: 'Edit Labels', 
-      text: 'Edit Labels', 
+      id: 'Manage Labels', 
+      text: 'Manage Labels', 
       icon: <EditIcon color='secondary'/>, 
       path: '/labels' 
     }

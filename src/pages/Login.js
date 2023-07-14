@@ -75,10 +75,11 @@ export default function Login() {
       } 
       catch (error) {
         setLoading(false)
-        dispatch(openSnackBar('Failed to log in.'))
         console.log(error)
         if(error.message == 401) {
           setAlertActive(true)
+        } else {
+          dispatch(openSnackBar('Failed to log in.'))
         }
       }
     }    
