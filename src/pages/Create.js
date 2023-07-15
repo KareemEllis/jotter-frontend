@@ -92,6 +92,7 @@ export default function Create() {
       try {
         await dispatch(createNote(title, details, labels, pinned, bgColor))
         setLoading(false)
+        dispatch(openSnackBar('Created note.'))
         navigate('/')
       } 
       catch (error) {

@@ -183,6 +183,7 @@ export default function EditLabels() {
         changeLoadState(label, true)
         await dispatch(updateLabel(label.id, newText))
         changeLoadState(label, false)
+        dispatch(openSnackBar('Edited Label'))
       } 
       catch (error) {
         console.error(error)

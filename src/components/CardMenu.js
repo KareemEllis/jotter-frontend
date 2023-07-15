@@ -31,6 +31,7 @@ export default function CardMenu({ note, anchorEl, setAnchorEl }) {
 
     try {
       await dispatch(deleteNote(note.id))
+      dispatch(openSnackBar('Deleted note.'))
     } catch (error) {
       console.log(error)
       dispatch(openSnackBar('Failed to delete note.'))

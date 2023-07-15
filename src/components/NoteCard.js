@@ -49,6 +49,7 @@ export default function NoteCard({ note }) {
   const handleLabelDelete = (label) => {
     try {
       dispatch(removeLabel(note.id, label))
+      dispatch(openSnackBar('Removed label.'))
     } catch (error) {
       console.log(error)
       dispatch(openSnackBar('Failed to remove label.'))
