@@ -4,6 +4,7 @@ import Typography from '@mui/material/Typography'
 import Tooltip from '@mui/material/Tooltip'
 import Chip from '@mui/material/Chip'
 import { darken, lighten } from '@mui/material/styles'
+import ColorPicker from './ColorPicker'
 
 //CARD
 import Card from '@mui/material/Card'
@@ -21,7 +22,7 @@ import CardLabelMenu from './CardLabelMenu'
 
 import { useNavigate } from 'react-router-dom'
 import { openSnackBar } from '../reducers/snackBarReducer'
-import { removeLabel } from '../reducers/noteReducer'
+import { removeLabel, updateBackgroundColor  } from '../reducers/noteReducer'
 import { useDispatch, useSelector } from 'react-redux'
 
 export default function NoteCard({ note }) {
@@ -43,6 +44,23 @@ export default function NoteCard({ note }) {
   //Handle Opening the Card Label Menu
   const handleLabelMenuClick = (event) => {
     setAnchorLabelEl(event.currentTarget)
+  }
+
+  const [colorPickerAnchorEl, setColorPickerAnchorEl] = useState(null)
+
+  //Handle Opening the Color Picker
+  const handleChangeColorClick = (event) => {
+    setColorPickerAnchorEl(anchorEl)
+    setAnchorEl(null)
+  }
+
+  const handleChangeColor = async (color) => {
+    try {
+      await dispatch(updateBackgroundColor(note.id, color))
+    } catch (error) {
+      console.log(error)
+      dispatch(openSnackBar('Failed to update color.'))
+    }
   }
 
   //Handle Deleting a Card's label
@@ -164,6 +182,7 @@ export default function NoteCard({ note }) {
         note={note} 
         anchorEl={anchorEl} 
         setAnchorEl={setAnchorEl} 
+        handleChangeColorClick={handleChangeColorClick}
       />
 
       <CardLabelMenu 
@@ -172,7 +191,12 @@ export default function NoteCard({ note }) {
         setAnchorLabelEl={setAnchorLabelEl} 
       />
       
-      
+      <ColorPicker 
+        color={note.backgroundcolor}
+        handleColorChange={handleChangeColor}
+        anchorEl={colorPickerAnchorEl}
+        setAnchorEl={setColorPickerAnchorEl}
+      />
     </div>
   )
 }

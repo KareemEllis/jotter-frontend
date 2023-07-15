@@ -1,10 +1,11 @@
 /* eslint-disable react/prop-types */
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import Menu from '@mui/material/Menu'
 import MenuItem from '@mui/material/MenuItem'
 import DeleteOutlined from '@mui/icons-material/DeleteOutlined'
 import PushPinOutlinedIcon from '@mui/icons-material/PushPinOutlined'
 import PushPinIcon from '@mui/icons-material/PushPin'
+import ColorLensOutlinedIcon from '@mui/icons-material/ColorLensOutlined'
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined'
 import LinearProgress from '@mui/material/LinearProgress'
 
@@ -13,12 +14,13 @@ import { openSnackBar } from '../reducers/snackBarReducer'
 import { useNavigate } from 'react-router-dom'
 import { useDispatch } from 'react-redux'
 
-export default function CardMenu({ note, anchorEl, setAnchorEl }) {
+export default function CardMenu({ note, anchorEl, setAnchorEl, handleChangeColorClick }) {
   const navigate = useNavigate()
   const dispatch = useDispatch()
 
   const [cardMenuLoading, setCardMenuLoading] = useState(false)
   const open = Boolean(anchorEl)
+
 
   //Handle Closing the Card Menu
   const handleMenuClose = () => {
@@ -67,6 +69,11 @@ export default function CardMenu({ note, anchorEl, setAnchorEl }) {
         {note.pinned ? 'Unpin' : 'Pin'}
       </MenuItem>
 
+      <MenuItem onClick={handleChangeColorClick}>
+        <ColorLensOutlinedIcon sx={rightMargin} color='secondary' />
+        Change Color
+      </MenuItem>
+
       {/* //Edit Note */}
       <MenuItem onClick={() => navigate(`/note/${note.id}`)}>
         <EditOutlinedIcon sx={rightMargin} color='secondary'/>
@@ -85,6 +92,8 @@ export default function CardMenu({ note, anchorEl, setAnchorEl }) {
           : 
           ''
       }
+
+      
     </Menu>
   )
 }
