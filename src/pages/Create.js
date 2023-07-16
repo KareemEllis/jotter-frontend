@@ -1,11 +1,13 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import Typography from '@mui/material/Typography'
 import Button from '@mui/material/Button'
 import Container from '@mui/material/Container'
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight'
 import PushPinOutlinedIcon from '@mui/icons-material/PushPinOutlined'
 import PushPinIcon from '@mui/icons-material/PushPin'
+import DeleteIcon from '@mui/icons-material/Delete'
 import FormControlLabel from '@mui/material/FormControlLabel'
+import Input from '@mui/material/Input'
 import TextField from '@mui/material/TextField'
 import Checkbox from '@mui/material/Checkbox'
 import { darken } from '@mui/material/styles'
@@ -28,12 +30,15 @@ export default function Create() {
   const [details, setDetails] = useState('')
   const [labels, setLabels] = useState([])
   const [bgColor, setBgColor] =useState('#FFFFFF')
+  const [file, setFile] = useState(null)
+
+  const [filePreview, setFilePreview] = useState(null)
 
   const [titleError, setTitleError] = useState(false)
   const [detailsError, setDetailsError] = useState(false)
   const [titleHelperText, setTitleHelperText] = useState('')
   const [detailsHelperText, setDetailsHelperText] = useState('')
-
+  
   const [loading, setLoading] = useState(false)
 
   const [anchorEl, setAnchorEl] = useState(null)
@@ -41,6 +46,14 @@ export default function Create() {
   const handleMenuClick = (event) => {
     setAnchorEl(event.currentTarget)
   }
+
+  useEffect(() => {
+    return () => {
+      if (filePreview) {
+        URL.revokeObjectURL(filePreview)
+      }
+    }
+  }, [filePreview])
 
   const handleColorChange = (newColor) => {
     setBgColor(newColor)
@@ -56,6 +69,24 @@ export default function Create() {
     else {
       setLabels(prev => prev.filter(l => l != label.id))
     }
+  }
+
+  const handleFileInputChange = (event) => {
+    const file = event.target.files[0]
+    const allowedFormats = ['image/jpeg', 'image/png', 'image/jpg']
+    const maxSize = 5 * 1024 * 1024 // 5MB
+
+    if (file && allowedFormats.includes(file.type) && file.size <= maxSize) {
+      setFile(file)
+      setFilePreview(URL.createObjectURL(file))
+    } else {
+      dispatch(openSnackBar('Invalid file format or size exceeded (max 5MB).'))
+    }
+  }
+
+  const removeFile = () => {
+    setFile(null)
+    setFilePreview(null)
   }
 
   const getContrastText = (color) => {
@@ -90,9 +121,13 @@ export default function Create() {
     if (title && details) {
       setLoading(true)
       try {
-        await dispatch(createNote(title, details, labels, pinned, bgColor))
+        await dispatch(createNote(title, details, labels, pinned, bgColor, file))
         setLoading(false)
         dispatch(openSnackBar('Created note.'))
+
+        //Cleanup file preview object
+        URL.revokeObjectURL(filePreview)
+        setFilePreview(null)
         navigate('/')
       } 
       catch (error) {
@@ -126,6 +161,7 @@ export default function Create() {
       </Typography>
       
       <form noValidate autoComplete="off" onSubmit={handleSubmit}>
+        {/* //Button To toggle note being pinned */}
         <ToggleButton
           value="check"
           selected={pinned}
@@ -134,6 +170,7 @@ export default function Create() {
           { pinned ? <PushPinIcon /> : <PushPinOutlinedIcon /> }
         </ToggleButton>
 
+        {/* //Color Picker Menu */}
         <div>
           <Button 
             onClick={handleMenuClick}
@@ -150,7 +187,31 @@ export default function Create() {
             {bgColor}
           </Button>
         </div>
+        
+        {/* //Photo File Selection */}
+        <div style={{ marginTop: '15px' }}>
+          <Input
+            id="file-input"
+            type="file"
+            onChange={handleFileInputChange}
+            style={{ display: 'none' }}
+          />
+          <label htmlFor="file-input">
+            <Button variant="contained" color='secondary' component="span">
+              Choose Photo
+            </Button>
+          </label>
+          <Button onClick={() => removeFile()}>
+            <DeleteIcon color='secondary'/>
+          </Button>
+          {filePreview && (
+            <div style={{ marginTop: '15px' }}>
+              <img src={filePreview} alt="File Preview" style={{ maxWidth: '500px', maxHeight: '300px' }} />
+            </div>
+          )}
+        </div>
 
+        {/* //Note Title input */}
         <div style={{ maxWidth: 600 }}>
           <TextField
             onChange={(e) => setTitle(e.target.value)}
@@ -165,6 +226,8 @@ export default function Create() {
             margin="normal"
           />
         </div>
+
+        {/* //Note Details input */}
         <div style={{ maxWidth: 900 }}>
           <TextField
             onChange={(e) => setDetails(e.target.value)}
@@ -182,6 +245,7 @@ export default function Create() {
 
         { labelCheckBoxes }
 
+        {/* //Submit Button */}
         <Button
           type="submit" 
           variant="contained"
@@ -191,6 +255,7 @@ export default function Create() {
           Submit
         </Button>
       </form>
+
 
       <ColorPicker 
         color={bgColor}

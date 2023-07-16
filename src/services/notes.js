@@ -33,13 +33,17 @@ const get = async (id) => {
   }
 }
 
-const create = async (newNote) => {
+const create = async (formData) => {
   try {
     const config = {
-      headers: { Authorization: getConfig().jwt }
+      headers: { 
+        Authorization: getConfig().jwt,
+        'Content-Type': 'multipart/form-data'
+      }
     }
+    console.log(formData)
 
-    const response = await axios.post(baseUrl, newNote, config)
+    const response = await axios.post(baseUrl, formData, config)
     return response.data
   } 
   catch (error) {
@@ -63,13 +67,17 @@ const remove = async (id) => {
   }
 }
 
-const update = async (id, updatedNote) => {
+const update = async (id, formData) => {
   try {
     const config = {
-      headers: { Authorization: getConfig().jwt }
+      headers: { 
+        Authorization: getConfig().jwt,
+        'Content-Type': 'multipart/form-data'
+      }
     }
+    console.log(formData)
 
-    const response = await axios.patch(`${baseUrl}/${id}`, updatedNote, config)
+    const response = await axios.patch(`${baseUrl}/${id}`, formData, config)
     return response.data
   } 
   catch (error) {

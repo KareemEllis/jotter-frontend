@@ -8,6 +8,7 @@ import ColorPicker from './ColorPicker'
 
 //CARD
 import Card from '@mui/material/Card'
+import CardMedia from '@mui/material/CardMedia'
 import CardHeader from '@mui/material/CardHeader'
 import CardContent from '@mui/material/CardContent'
 import CardActions from '@mui/material/CardActions'
@@ -110,6 +111,18 @@ export default function NoteCard({ note }) {
         elevation={1} 
         sx={{ backgroundColor: note.backgroundColor }}
       >
+
+        {
+          //Card Photo
+          note.photoFilename &&
+          <CardMedia
+            component="img"
+            image={note.photoFilename ? `api/photos/${note.photoFilename}` : null}
+            alt={`Photo for note ${note.title}`}
+            height="240"
+          />
+        }
+        
         <CardHeader
           //CARD MENU
           action={

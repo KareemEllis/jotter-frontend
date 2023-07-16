@@ -3,9 +3,11 @@ import Typography from '@mui/material/Typography'
 import Button from '@mui/material/Button'
 import Container from '@mui/material/Container'
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight'
+import DeleteIcon from '@mui/icons-material/Delete'
 import PushPinOutlinedIcon from '@mui/icons-material/PushPinOutlined'
 import PushPinIcon from '@mui/icons-material/PushPin'
 import FormControlLabel from '@mui/material/FormControlLabel'
+import Input from '@mui/material/Input'
 import TextField from '@mui/material/TextField'
 import Checkbox from '@mui/material/Checkbox'
 import { darken } from '@mui/material/styles'
@@ -30,7 +32,11 @@ export default function Create() {
   const [title, setTitle] = useState('')
   const [details, setDetails] = useState('')
   const [labels, setLabels] = useState([])
-  const [bgColor, setBgColor] =useState('#FFFFFF')
+  const [bgColor, setBgColor] = useState('#FFFFFF')
+  const [file, setFile] = useState(null)
+  const [isPhotoChanged, setIsPhotoChanged] = useState(false)
+  
+  const [filePreview, setFilePreview] = useState(null)
 
   const [titleError, setTitleError] = useState(false)
   const [detailsError, setDetailsError] = useState(false)
@@ -53,6 +59,10 @@ export default function Create() {
       setDetails(note.details)
       setLabels(note.labels)
       setBgColor(note.backgroundColor)
+      setFilePreview(note.photoFilename)  
+    }
+    if (filePreview) {
+      URL.revokeObjectURL(filePreview)
     }
   }, [note])
 
@@ -70,6 +80,26 @@ export default function Create() {
     else {
       setLabels(prev => prev.filter(l => l != label.id))
     }
+  }
+
+  const handleFileInputChange = (event) => {
+    const file = event.target.files[0]
+    const allowedFormats = ['image/jpeg', 'image/png', 'image/jpg']
+    const maxSize = 5 * 1024 * 1024 // 5MB
+
+    if (file && allowedFormats.includes(file.type) && file.size <= maxSize) {
+      setFile(file)
+      setIsPhotoChanged(true)
+      setFilePreview(URL.createObjectURL(file))
+    } else {
+      dispatch(openSnackBar('Invalid file format or size exceeded (max 5MB).'))
+    }
+  }
+
+  const removeFile = () => {
+    setFile(null)
+    setIsPhotoChanged(true)
+    setFilePreview(null)
   }
 
   const getContrastText = (color) => {
@@ -104,7 +134,10 @@ export default function Create() {
     if (title && details) {
       setLoading(true)
       try {
-        await dispatch(updateNote(note.id, title, details, labels, pinned, bgColor))
+        let isRemovePhoto = (isPhotoChanged && !file) ? true : false
+        console.log(isRemovePhoto)
+        console.log(file)
+        await dispatch(updateNote(note.id, title, details, labels, pinned, bgColor, file, isRemovePhoto))
         setLoading(false)
         navigate('/')
       } 
@@ -167,6 +200,34 @@ export default function Create() {
           </Button>
         </div>
 
+        {/* //Photo File Selection */}
+        <div style={{ marginTop: '15px' }}>
+          <Input
+            id="file-input"
+            type="file"
+            onChange={handleFileInputChange}
+            style={{ display: 'none' }}
+          />
+          <label htmlFor="file-input">
+            <Button variant="contained" color='secondary' component="span">
+              Choose Photo
+            </Button>
+          </label>
+          <Button onClick={() => removeFile()}>
+            <DeleteIcon color='secondary'/>
+          </Button>
+          {(isPhotoChanged && filePreview) && (
+            <div style={{ marginTop: '15px' }}>
+              <img src={filePreview} alt="File Preview" style={{ maxWidth: '500px', maxHeight: '300px' }} />
+            </div>
+          )}
+          {(!isPhotoChanged && filePreview) && (
+            <div style={{ marginTop: '15px' }}>
+              <img src={`/api/photos/${filePreview}`} alt="File Preview" style={{ maxWidth: '500px', maxHeight: '300px' }} />
+            </div>
+          )}
+        </div>
+        
         {/* //Title Control */}
         <div style={{ maxWidth: 600 }}>
           <TextField

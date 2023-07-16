@@ -39,16 +39,23 @@ export const setNewNotes = (notes) => {
     dispatch(setNotes(notes))
   }
 }
-export const createNote = (title, details, labels, pinned, backgroundColor) => {
+export const createNote = (title, details, labels, pinned, backgroundColor, photo) => {
+  const formData = new FormData()
+
   const note = {
     title,
     details,
-    labels,
+    labels: labels.length ? labels : '',
     pinned,
-    backgroundColor
+    backgroundColor,
+    photo: photo
   }
+  for (const [key, value] of Object.entries(note)) {
+    formData.append(key, value)
+  }
+
   return async dispatch => {
-    await noteService.create(note)
+    await noteService.create(formData)
       .then(newNote => dispatch(appendNote(newNote)))
       .catch(error => {
         console.log(error)
@@ -68,17 +75,24 @@ export const deleteNote = (id) => {
   }
 }
 
-export const updateNote = (id, title, details, labels, pinned, backgroundColor) => {
-  const updatedNote = {
+export const updateNote = (id, title, details, labels, pinned, backgroundColor, photo, isRemovePhoto) => {
+  const formData = new FormData()
+  const updatedNoteData = {
     id,
     title,
     details,
-    labels,
+    labels: labels.length ? labels : '',
     pinned,
-    backgroundColor
+    backgroundColor,
+    isRemovePhoto,
+    photo: photo
   }
+  for (const [key, value] of Object.entries(updatedNoteData)) {
+    formData.append(key, value)
+  }
+
   return async dispatch => {
-    await noteService.update(id, updatedNote)
+    await noteService.update(id, updatedNoteData)
       .then(note => dispatch(patchNote(note)))
       .catch(error => {
         console.log(error)
