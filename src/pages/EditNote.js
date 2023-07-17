@@ -204,12 +204,12 @@ export default function Create() {
           </Button>
           {(isPhotoChanged && filePreview) && (
             <div style={{ marginTop: '15px' }}>
-              <img src={filePreview} alt="File Preview" style={{ maxWidth: '500px', maxHeight: '300px' }} />
+              <img src={filePreview} alt="File Preview" style={{ maxWidth: '250px', maxHeight: '300px' }} />
             </div>
           )}
           {(!isPhotoChanged && filePreview) && (
             <div style={{ marginTop: '15px' }}>
-              <img src={`/api/photos/${filePreview}`} alt="File Preview" style={{ maxWidth: '500px', maxHeight: '300px' }} />
+              <img src={`/api/photos/${filePreview}`} alt="File Preview" style={{ maxWidth: '250px', maxHeight: '300px' }} />
             </div>
           )}
         </div>
