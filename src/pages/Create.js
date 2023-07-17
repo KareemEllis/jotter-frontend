@@ -182,14 +182,15 @@ export default function Create() {
             type="file"
             onChange={handleFileInputChange}
             style={{ display: 'none' }}
+            disabled
           />
           <label htmlFor="file-input">
-            <Button variant="contained" color='secondary' component="span">
+            <Button variant="contained" color='secondary' component="span" disabled>
               Choose Photo
             </Button>
           </label>
-          <Button onClick={() => removeFile()}>
-            <DeleteIcon color='secondary'/>
+          <Button disabled onClick={() => removeFile()} color='secondary'>
+            <DeleteIcon />
           </Button>
           {filePreview && (
             <div style={{ marginTop: '15px' }}>
