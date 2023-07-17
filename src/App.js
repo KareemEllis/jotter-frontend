@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
-import theme from './theme'
+import theme from './utils/theme'
 import { ThemeProvider } from '@mui/material/styles'
 import SnackNotification from './components/SnackNotification' 
+import NoteDialog from './components/NoteDialog'
 
 import Layout from './components/Layout'
 import Notes from './pages/Notes'
@@ -110,6 +111,8 @@ function App() {
         </Routes>
 
         <SnackNotification />
+        <NoteDialog />
+
       </Router>
     </ThemeProvider>
   )

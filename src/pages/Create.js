@@ -14,6 +14,7 @@ import { darken } from '@mui/material/styles'
 import ToggleButton from '@mui/material/ToggleButton'
 import CircularProgress from '@mui/material/CircularProgress'
 import ColorPicker from '../components/ColorPicker'
+import { getContrastText } from '../utils/contrastColors'
 
 import { useNavigate } from 'react-router-dom'
 import { openSnackBar } from '../reducers/snackBarReducer'
@@ -87,20 +88,6 @@ export default function Create() {
   const removeFile = () => {
     setFile(null)
     setFilePreview(null)
-  }
-
-  const getContrastText = (color) => {
-    // Remove the '#' symbol from the hex color code
-    const hex = color.replace('#', '')
-  
-    // Convert the hex color code to its numeric representation
-    const numericColor = parseInt(hex, 16)
-  
-    // Calculate the brightness of the color
-    const brightness = (numericColor >> 16) + (numericColor >> 8 & 0xff) + (numericColor & 0xff)
-  
-    // Use black text color if brightness is greater than a threshold, otherwise use white
-    return brightness > 400 ? '#000000' : '#ffffff'
   }
 
   const handleSubmit = async (e) => {

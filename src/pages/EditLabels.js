@@ -83,6 +83,7 @@ export default function EditLabels() {
     setLabelNameHelperText('')
 
     const labelAlreadyExists = allLabels.some(l => l.name === newLabel)
+    const labelTooLong = newLabel.length > 30 ? true : false
 
     if (newLabel === '') {
       setNewLabelError(true)
@@ -92,8 +93,12 @@ export default function EditLabels() {
       setNewLabelError(true)
       setLabelNameHelperText('This label already exists.')
     }
+    if (labelTooLong) {
+      setNewLabelError(true)
+      setLabelNameHelperText('Label cannot be longer than 30 characters.')
+    }
 
-    if (newLabel !== '' && !labelAlreadyExists) {
+    if (newLabel !== '' && !labelAlreadyExists && !labelTooLong) {
       try {
         setNewLabelLoading(true)
         await dispatch(createLabel(newLabel))

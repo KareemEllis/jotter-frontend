@@ -3,8 +3,9 @@ import React, { useState } from 'react'
 import Typography from '@mui/material/Typography'
 import Tooltip from '@mui/material/Tooltip'
 import Chip from '@mui/material/Chip'
-import { darken, lighten } from '@mui/material/styles'
 import ColorPicker from './ColorPicker'
+import { darken} from '@mui/material/styles'
+import { getContrastText, getContrastChip, getNoteButtonColor } from '../utils/contrastColors'
 
 //CARD
 import Card from '@mui/material/Card'
@@ -24,6 +25,7 @@ import CardLabelMenu from './CardLabelMenu'
 import { useNavigate } from 'react-router-dom'
 import { openSnackBar } from '../reducers/snackBarReducer'
 import { removeLabel, updateBackgroundColor  } from '../reducers/noteReducer'
+import { openNoteDialog } from '../reducers/noteDialogReducer'
 import { useDispatch, useSelector } from 'react-redux'
 
 export default function NoteCard({ note }) {
@@ -36,6 +38,7 @@ export default function NoteCard({ note }) {
   
   //Handle Opening the Card Menu
   const handleMenuClick = (event) => {
+    event.stopPropagation()
     setAnchorEl(event.currentTarget)
   }
 
@@ -44,6 +47,7 @@ export default function NoteCard({ note }) {
 
   //Handle Opening the Card Label Menu
   const handleLabelMenuClick = (event) => {
+    event.stopPropagation()
     setAnchorLabelEl(event.currentTarget)
   }
 
@@ -65,7 +69,9 @@ export default function NoteCard({ note }) {
   }
 
   //Handle Deleting a Card's label
-  const handleLabelDelete = (label) => {
+  const handleLabelDelete = (event, label) => {
+    event.stopPropagation()
+
     try {
       dispatch(removeLabel(note.id, label))
       dispatch(openSnackBar('Removed label.'))
@@ -75,41 +81,17 @@ export default function NoteCard({ note }) {
     }
   }
 
-  const getContrastText = (color) => {
-    const hex = color.replace('#', '')
-    // Convert the hex color code to its numeric representation
-    const numericColor = parseInt(hex, 16)
-    // Calculate the brightness of the color
-    const brightness = (numericColor >> 16) + (numericColor >> 8 & 0xff) + (numericColor & 0xff)
-    // Use black text color if brightness is greater than a threshold, otherwise use white
-    return brightness > 400 ? '#000000' : '#ffffff'
-  }
-
-  const getContrastChip = (color) => {
-    const hex = color.replace('#', '')
-    // Convert the hex color code to its numeric representation
-    const numericColor = parseInt(hex, 16)
-    // Calculate the brightness of the color
-    const brightness = (numericColor >> 16) + (numericColor >> 8 & 0xff) + (numericColor & 0xff)
-    // Use black text color if brightness is greater than a threshold, otherwise use white
-    return brightness > 400 ? darken(color, 0.08) : darken('#ffffff', 0.02)
-  }
-
-  const getAddLabelButtonColor = (color) => {
-    const hex = color.replace('#', '')
-    // Convert the hex color code to its numeric representation
-    const numericColor = parseInt(hex, 16)
-    // Calculate the brightness of the color
-    const brightness = (numericColor >> 16) + (numericColor >> 8 & 0xff) + (numericColor & 0xff)
-    // Use black text color if brightness is greater than a threshold, otherwise use white
-    return brightness > 400 ? darken(color, 0.4) : darken('#ffffff', 0.02)
+  const goToLabel = (event, label) => {
+    event.stopPropagation()
+    navigate(`/label/${label}`)
   }
 
   return (
     <div>
       <Card 
         elevation={1} 
-        sx={{ backgroundColor: note.backgroundColor }}
+        sx={{ backgroundColor: note.backgroundColor, cursor: 'pointer' }}
+        onClick={() => dispatch(openNoteDialog(note.id))}
       >
 
         {
@@ -129,7 +111,7 @@ export default function NoteCard({ note }) {
             <div>
               <Tooltip title="More">
                 <IconButton
-                  onClick={handleMenuClick}
+                  onClick={(e) => handleMenuClick(e)}
                   sx={{ color: getContrastText(note.backgroundColor) }}
                 >
                   <MoreVertIcon />
@@ -167,9 +149,10 @@ export default function NoteCard({ note }) {
                 <Chip 
                   key={label} 
                   label={labelObj ? labelObj.name : ''} 
-                  onClick={() => navigate(`/label/${label}`)}
-                  onDelete={() => handleLabelDelete(label)} 
-                  sx={{ 
+                  onClick={(e) => goToLabel(e, label)}
+                  onDelete={(e) => handleLabelDelete(e, label)} 
+                  sx={{
+                    marginTop: '5px',
                     marginRight: '5px',
                     backgroundColor: getContrastChip(note.backgroundColor),
                     ':hover': {
@@ -181,9 +164,9 @@ export default function NoteCard({ note }) {
             })}
             <Tooltip title="Add Label">
               <IconButton
-                onClick={handleLabelMenuClick}
+                onClick={(e) => handleLabelMenuClick(e)}
               >
-                <AddCircleIcon sx={{ color: getAddLabelButtonColor(note.backgroundColor) }} />
+                <AddCircleIcon sx={{ color: getNoteButtonColor(note.backgroundColor) }} />
               </IconButton>
             </Tooltip>
           </div>

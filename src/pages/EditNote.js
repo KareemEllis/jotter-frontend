@@ -11,6 +11,7 @@ import Input from '@mui/material/Input'
 import TextField from '@mui/material/TextField'
 import Checkbox from '@mui/material/Checkbox'
 import { darken } from '@mui/material/styles'
+import { getContrastText } from '../utils/contrastColors'
 import ToggleButton from '@mui/material/ToggleButton'
 import CircularProgress from '@mui/material/CircularProgress'
 import ColorPicker from '../components/ColorPicker'
@@ -102,20 +103,6 @@ export default function Create() {
     setFilePreview(null)
   }
 
-  const getContrastText = (color) => {
-    // Remove the '#' symbol from the hex color code
-    const hex = color.replace('#', '')
-  
-    // Convert the hex color code to its numeric representation
-    const numericColor = parseInt(hex, 16)
-  
-    // Calculate the brightness of the color
-    const brightness = (numericColor >> 16) + (numericColor >> 8 & 0xff) + (numericColor & 0xff)
-  
-    // Use black text color if brightness is greater than a threshold, otherwise use white
-    return brightness > 400 ? '#000000' : '#ffffff'
-  }
-
   const handleSubmit = async (e) => {
     e.preventDefault()
     setTitleError(false)
@@ -135,8 +122,7 @@ export default function Create() {
       setLoading(true)
       try {
         let isRemovePhoto = (isPhotoChanged && !file) ? true : false
-        console.log(isRemovePhoto)
-        console.log(file)
+
         await dispatch(updateNote(note.id, title, details, labels, pinned, bgColor, file, isRemovePhoto))
         setLoading(false)
         navigate('/')

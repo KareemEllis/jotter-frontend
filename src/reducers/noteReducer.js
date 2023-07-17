@@ -41,11 +41,11 @@ export const setNewNotes = (notes) => {
 }
 export const createNote = (title, details, labels, pinned, backgroundColor, photo) => {
   const formData = new FormData()
-
+  
   const note = {
     title,
     details,
-    labels: labels.length ? labels : '',
+    labels: labels.length==0 ? [] : labels,
     pinned,
     backgroundColor,
     photo: photo
@@ -77,11 +77,12 @@ export const deleteNote = (id) => {
 
 export const updateNote = (id, title, details, labels, pinned, backgroundColor, photo, isRemovePhoto) => {
   const formData = new FormData()
+
   const updatedNoteData = {
     id,
     title,
     details,
-    labels: labels.length ? labels : '',
+    labels: labels.length==0 ? [] : labels,
     pinned,
     backgroundColor,
     isRemovePhoto,
